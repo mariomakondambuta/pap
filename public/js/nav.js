@@ -40,7 +40,11 @@ function initMobileNav() {
   if (!toggle || !links) return;
   toggle.addEventListener('click', () => {
     links.classList.toggle('nav-links-open');
-    links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+  });
+  document.addEventListener('click', (e) => {
+    if (!links.classList.contains('nav-links-open')) return;
+    if (links.contains(e.target) || toggle.contains(e.target)) return;
+    links.classList.remove('nav-links-open');
   });
 }
 

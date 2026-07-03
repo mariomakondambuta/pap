@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preços — EduWeb</title>
+  <meta name="description" content="Preços simples e transparentes da EduWeb: sem mensalidades, pague apenas uma pequena comissão quando vender." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container flex-between">
+      <a href="/index.html" class="logo">Edu<span>Web</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/index.html">Início</a></li>
+        <li><a href="/cursos.html">Explorar</a></li>
+        <li><a href="/precos.html">Preços</a></li>
+        <li><a href="/verificar.html">Verificar Certificado</a></li>
+      </ul>
+      <div class="flex gap-md" id="nav-actions"></div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <header class="section text-center" style="padding-bottom:48px;">
+    <div class="container">
+      <span class="eyebrow">Preços</span>
+      <h1>Preços simples. Sem surpresas.</h1>
+      <p style="font-size:1.05rem; max-width:560px; margin:0 auto;">
+        Criar conta, publicar produtos e vender na EduWeb é sempre gratuito.
+        Só paga quando vender — sem mensalidades, sem taxas de configuração.
+      </p>
+    </div>
+  </header>
+
+  <section class="section-sm">
+    <div class="container">
+      <div class="card pricing-hero-card text-center">
+        <div class="pricing-big-number"><span data-commission>—</span></div>
+        <p class="pricing-caption">por cada venda concluída. O restante é seu.</p>
+      </div>
+      <div class="trust-strip" style="justify-content:center; border-top:none; margin-top:24px;">
+        <span class="trust-item">Sem mensalidades</span>
+        <span class="trust-item">Sem taxas de configuração</span>
+        <span class="trust-item">Sem limite de produtos</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--color-bg-alt);">
+    <div class="container">
+      <div class="text-center" style="max-width:640px; margin: 0 auto 40px;">
+        <span class="eyebrow">Tudo incluído</span>
+        <h2>Uma só taxa. Nada escondido.</h2>
+      </div>
+      <div class="grid grid-3" id="pricing-features"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="text-center" style="max-width:640px; margin: 0 auto 40px;">
+        <span class="eyebrow">Exemplos</span>
+        <h2>Quanto é que vai receber?</h2>
+        <p>Alguns exemplos de quanto fica na sua carteira depois da comissão da EduWeb.</p>
+      </div>
+      <div class="table-wrap" style="max-width:640px; margin:0 auto;">
+        <table>
+          <thead><tr><th>Preço de venda</th><th>Comissão EduWeb</th><th>Você recebe</th></tr></thead>
+          <tbody id="pricing-examples-body">
+            <tr><td colspan="3">A carregar...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pricing-disclaimer" style="margin-top:24px;">
+        Os pagamentos são processados de forma segura pela Stripe. Podem aplicar-se encargos de
+        processamento de pagamento adicionais, cobrados diretamente pela Stripe e independentes da
+        comissão da EduWeb.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--color-bg-alt);">
+    <div class="container">
+      <div class="text-center" style="max-width:640px; margin: 0 auto 40px;">
+        <span class="eyebrow">Perguntas frequentes</span>
+        <h2>Ainda tem dúvidas?</h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item" open>
+          <summary>Há alguma mensalidade ou taxa de adesão?</summary>
+          <p>Não. Criar conta, publicar produtos e explorar o catálogo é sempre gratuito. A EduWeb só fica com uma pequena comissão quando um produto é efetivamente vendido.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Como e quando recebo o meu dinheiro?</summary>
+          <p>Cada venda paga é creditada na sua carteira EduWeb, já com a comissão descontada. Pode pedir um levantamento para IBAN ou MB WAY a qualquer momento, a partir de 10,00 €.</p>
+        </details>
+        <details class="faq-item">
+          <summary>A Stripe cobra taxas adicionais?</summary>
+          <p>Os pagamentos são processados pela Stripe, que pode aplicar encargos de processamento de cartão próprios (habituais no setor). Esses encargos são cobrados pela Stripe e são independentes da comissão da EduWeb.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Posso vender produtos gratuitos?</summary>
+          <p>Sim. Pode definir o preço de qualquer produto como 0 € para o oferecer gratuitamente — não é cobrada qualquer comissão sobre acessos gratuitos.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Existe um limite de produtos que posso publicar?</summary>
+          <p>Não. Pode publicar cursos, e-books, planilhas, templates e packs sem limite, todos incluídos na mesma comissão por venda.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Posso mudar a comissão que pago?</summary>
+          <p>A comissão é definida de forma transparente pela EduWeb e aplica-se por igual a todos os produtores. Qualquer alteração é sempre refletida nesta página.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section text-center">
+    <div class="container" style="max-width:640px;">
+      <h2>Pronto para começar a vender?</h2>
+      <p>Crie a sua conta grátis e publique o seu primeiro produto em minutos.</p>
+      <a href="/registar.html" class="btn btn-primary">Criar conta grátis</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div>
+        <div class="logo" style="margin-bottom:12px;">Edu<span>Web</span></div>
+        <p>O marketplace onde produtores vendem infoprodutos e alunos aprendem ao seu ritmo, com pagamentos seguros.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <div class="flex-col gap-sm">
+          <a href="/cursos.html">Explorar produtos</a>
+          <a href="/precos.html">Preços</a>
+          <a href="/registar.html">Criar conta</a>
+          <a href="/login.html">Entrar</a>
+        </div>
+      </div>
+      <div>
+        <h4>Suporte</h4>
+        <div class="flex-col gap-sm">
+          <a href="/verificar.html">Verificar certificado</a>
+          <a href="mailto:suporte@eduweb.com">Contacto</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 EduWeb. Projeto desenvolvido no âmbito da Prova de Aptidão Profissional (PAP).</div>
+  </footer>
+
+  <script src="/js/icons.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/product-card.js"></script>
+  <script src="/js/precos.js"></script>
+</body>
+</html>

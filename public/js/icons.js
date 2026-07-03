@@ -12,7 +12,7 @@ const ICON_PATHS = {
   grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
   wallet: '<rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1.3"/>',
   briefcase: '<rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="2" y1="12" x2="22" y2="12"/>',
-  'book-open': '<path d="M2 5c2-1 5-1 7 0v14c-2-1-5-1-7 0z"/><path d="M22 5c-2-1-5-1-7 0v14c2-1 5-1 7 0z"/>',
+  'book-open': '<path d="M2 5.5h6a3 3 0 0 1 3 3V19a2.5 2.5 0 0 0-2.5-1.5H2z"/><path d="M22 5.5h-6a3 3 0 0 0-3 3V19a2.5 2.5 0 0 1 2.5-1.5H22z"/>',
   award: '<circle cx="12" cy="8" r="6"/><path d="M8.5 13.5L7 22l5-3 5 3-1.5-8.5"/>',
   search: '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
   zap: '<polygon points="13 2 3 14 11 14 9 22 21 10 13 10 13 2"/>',
@@ -25,6 +25,12 @@ const ICON_PATHS = {
   'chevron-right': '<polyline points="9 18 15 12 9 6"/>',
   'chevron-left': '<polyline points="15 18 9 12 15 6"/>',
   clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>',
+  home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5c0-4 3-6.5 6.5-6.5s6.5 2.5 6.5 6.5"/><circle cx="18" cy="8.5" r="2.5"/><path d="M21.5 20.5c0-3-1.8-5-4-5.7"/>',
+  sliders: '<line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="18" r="2"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+  'life-buoy': '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><line x1="7.5" y1="7.5" x2="10" y2="10"/><line x1="14" y1="14" x2="16.5" y2="16.5"/><line x1="16.5" y1="7.5" x2="14" y2="10"/><line x1="10" y1="14" x2="7.5" y2="16.5"/>',
+  infinity: '<path d="M7 9a3.5 3.5 0 1 0 0 7 5 5 0 0 0 4-2l2-3a5 5 0 1 1 0 3"/><path d="M17 9a3.5 3.5 0 1 1 0 7 5 5 0 0 1-4-2"/>',
 };
 
 function icon(name, size = 18) {

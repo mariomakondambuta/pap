@@ -27,6 +27,21 @@ retendo uma comissão configurável em cada venda.
   os produtores, transações, levantamentos pendentes, utilizadores e
   definições de comissão
 
+## Design
+
+Interface monocromática (preto, branco e tons de cinzento), inspirada no
+painel de administração da Shopify: barra superior escura, sidebar clara
+com item ativo destacado e conteúdo em cartões brancos sobre fundo cinzento
+claro. Layout mobile-first — a sidebar de "A minha conta" e do painel admin
+transforma-se numa gaveta (drawer) em ecrãs pequenos, já que a maioria dos
+clientes acede pelo telemóvel.
+
+A página `/precos.html` apresenta a comissão da plataforma (definida em
+`/admin/index.html → Definições`) de forma transparente, com exemplos de
+quanto o produtor recebe por venda — inspirada em
+[shopify.com/pt/precos](https://www.shopify.com/pt/precos) e
+[stripe.com/en-pt/pricing](https://stripe.com/en-pt/pricing).
+
 ## Stack tecnológico
 
 | Camada | Tecnologia |
@@ -54,8 +69,11 @@ pap/
 ├── utils/                     # JWT, certificados PDF, Stripe, cálculo de comissões
 ├── uploads/                   # ficheiros enviados (vídeo/PDF/ficheiros) — não versionado
 └── public/                    # frontend (HTML/CSS/JS servido estaticamente)
-    ├── css/style.css
+    ├── css/style.css          # design system monocromático + app shell
     ├── js/
+    │   ├── icons.js           # ícones SVG inline (sem emojis)
+    │   └── app-shell.js       # topbar + sidebar/drawer do painel e do admin
+    ├── precos.html            # página de preços (comissão, exemplos, FAQ)
     ├── painel.html            # área pessoal: Biblioteca / Vender / Carteira
     └── admin/index.html       # painel administrativo da plataforma
 ```

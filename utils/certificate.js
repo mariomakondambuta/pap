@@ -13,11 +13,11 @@ function renderCertificatePdf({ studentName, courseTitle, issuedAt, code }, res)
 
   const width = doc.page.width;
   const height = doc.page.height;
-  const primary = '#4F46E5';
-  const dark = '#1E1B4B';
-  const gold = '#D4A017';
+  const primary = '#1a1a1a';
+  const dark = '#0d0d0d';
+  const gold = '#4a4a4a';
 
-  doc.rect(0, 0, width, height).fill('#FDFCFB');
+  doc.rect(0, 0, width, height).fill('#fafafa');
   doc.lineWidth(3).strokeColor(primary).rect(24, 24, width - 48, height - 48).stroke();
   doc.lineWidth(1).strokeColor(gold).rect(34, 34, width - 68, height - 68).stroke();
 

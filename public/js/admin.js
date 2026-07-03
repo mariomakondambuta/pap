@@ -1,11 +1,4 @@
-function initials(name) {
-  if (!name) return '?';
-  return name.trim().split(/\s+/).slice(0, 2).map((p) => p[0].toUpperCase()).join('');
-}
-
 const user = Api.getUser();
-document.getElementById('admin-avatar').textContent = initials(user?.name);
-document.getElementById('btn-logout').addEventListener('click', () => Api.logout());
 
 /* ---------- Tabs ---------- */
 document.querySelectorAll('.tab-btn').forEach((btn) => {

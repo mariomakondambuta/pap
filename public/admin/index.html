@@ -10,108 +10,137 @@
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body data-require-admin="true">
-  <nav class="navbar">
-    <div class="container flex-between">
-      <a href="/admin/index.html" class="logo">Edu<span>Web</span> <span class="badge badge-neutral" style="margin-left:6px;">Admin</span></a>
-      <div class="flex gap-md">
-        <a href="/index.html" class="btn btn-ghost btn-sm">Ver site</a>
-        <div class="avatar" id="admin-avatar"></div>
-        <button class="btn btn-ghost btn-sm" id="btn-logout">Sair</button>
+  <div class="app-shell">
+    <header class="app-topbar">
+      <div class="app-topbar-left">
+        <button class="app-icon-btn app-sidebar-toggle" id="sidebar-toggle" aria-label="Abrir menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="/admin/index.html" class="logo">Edu<span>Web</span></a>
+        <span class="badge badge-neutral" style="background:rgba(255,255,255,0.1); color:#fff; border-color:transparent;">Admin</span>
       </div>
-    </div>
-  </nav>
-
-  <header class="page-header">
-    <div class="container">
-      <h1 style="margin-bottom:4px;">Painel administrativo</h1>
-      <p style="margin-bottom:0;">Controlo total da plataforma: produtos, transações, utilizadores e comissão.</p>
-    </div>
-  </header>
-
-  <div class="container section-sm">
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-      <button class="tab-btn" data-tab="produtos">Produtos</button>
-      <button class="tab-btn" data-tab="transacoes">Transações</button>
-      <button class="tab-btn" data-tab="levantamentos">Levantamentos</button>
-      <button class="tab-btn" data-tab="utilizadores">Utilizadores</button>
-      <button class="tab-btn" data-tab="definicoes">Definições</button>
-    </div>
-
-    <div class="tab-panel active" id="tab-dashboard">
-      <div class="grid grid-4" id="stats-cards">
-        <div class="spinner"></div>
+      <div class="app-topbar-right">
+        <a href="/index.html" class="app-topbar-link">Ver site</a>
+        <div class="avatar" id="account-avatar"></div>
+        <button class="app-icon-btn" id="btn-logout" aria-label="Sair">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
       </div>
-      <h3 style="margin-top:40px;">Vendas recentes</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Comprador</th><th>Produtor</th><th>Produto</th><th>Valor</th><th>Data</th></tr></thead>
-          <tbody id="recent-sales-body"><tr><td colspan="5">A carregar...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
+    </header>
 
-    <div class="tab-panel" id="tab-produtos">
-      <h3>Todos os produtos da plataforma</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Título</th><th>Produtor</th><th>Formato</th><th>Preço</th><th>Alunos</th><th>Estado</th><th>Ações</th></tr></thead>
-          <tbody id="products-body"><tr><td colspan="7">A carregar...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
+    <div class="app-body">
+      <div class="app-sidebar-backdrop" id="sidebar-backdrop"></div>
+      <aside class="app-sidebar" id="app-sidebar">
+        <nav class="app-nav">
+          <button class="tab-btn app-nav-item active" data-tab="dashboard">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+            Dashboard
+          </button>
+          <button class="tab-btn app-nav-item" data-tab="produtos">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><line x1="12" y1="13" x2="12" y2="21"/></svg>
+            Produtos
+          </button>
+          <button class="tab-btn app-nav-item" data-tab="transacoes">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            Transações
+          </button>
+          <button class="tab-btn app-nav-item" data-tab="levantamentos">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1.3"/></svg>
+            Levantamentos
+          </button>
+          <button class="tab-btn app-nav-item" data-tab="utilizadores">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5c0-4 3-6.5 6.5-6.5s6.5 2.5 6.5 6.5"/><circle cx="18" cy="8.5" r="2.5"/><path d="M21.5 20.5c0-3-1.8-5-4-5.7"/></svg>
+            Utilizadores
+          </button>
+          <button class="tab-btn app-nav-item" data-tab="definicoes">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="18" r="2"/></svg>
+            Definições
+          </button>
+        </nav>
+      </aside>
 
-    <div class="tab-panel" id="tab-transacoes">
-      <h3>Todas as transações</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Comprador</th><th>Produtor</th><th>Produto</th><th>Valor</th><th>Comissão</th><th>Estado</th><th>Data</th></tr></thead>
-          <tbody id="orders-body"><tr><td colspan="8">A carregar...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
+      <main class="app-main">
+        <div class="page-header-flat">
+          <h1>Painel administrativo</h1>
+          <p>Controlo total da plataforma: produtos, transações, utilizadores e comissão.</p>
+        </div>
 
-    <div class="tab-panel" id="tab-levantamentos">
-      <h3>Pedidos de levantamento</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Produtor</th><th>Valor</th><th>Conta</th><th>Estado</th><th>Pedido em</th><th>Ações</th></tr></thead>
-          <tbody id="withdrawals-body"><tr><td colspan="6">A carregar...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="tab-panel" id="tab-utilizadores">
-      <h3>Utilizadores</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Nome</th><th>Email</th><th>Papel</th><th>Registado em</th><th>Ações</th></tr></thead>
-          <tbody id="users-body"><tr><td colspan="5">A carregar...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="tab-panel" id="tab-definicoes">
-      <h3>Definições da plataforma</h3>
-      <div class="card" style="max-width:480px;">
-        <div class="alert alert-success" id="settings-success">Definições guardadas com sucesso.</div>
-        <form id="settings-form">
-          <div class="form-group">
-            <label for="settings-name">Nome da plataforma</label>
-            <input type="text" id="settings-name" />
+        <div class="tab-panel active" id="tab-dashboard">
+          <div class="grid grid-4" id="stats-cards">
+            <div class="spinner"></div>
           </div>
-          <div class="form-group">
-            <label for="settings-commission">Comissão da plataforma (%)</label>
-            <input type="number" id="settings-commission" min="0" max="100" step="0.1" />
-            <p class="muted" style="font-size:0.8rem; margin:6px 0 0;">Percentagem retida em cada venda paga. O restante é creditado ao produtor.</p>
+          <h3 style="margin-top:40px;">Vendas recentes</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Comprador</th><th>Produtor</th><th>Produto</th><th>Valor</th><th>Data</th></tr></thead>
+              <tbody id="recent-sales-body"><tr><td colspan="5">A carregar...</td></tr></tbody>
+            </table>
           </div>
-          <div class="form-group">
-            <label>Estado dos pagamentos</label>
-            <p><span class="badge" id="stripe-status-badge">—</span></p>
+        </div>
+
+        <div class="tab-panel" id="tab-produtos">
+          <h3>Todos os produtos da plataforma</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Título</th><th>Produtor</th><th>Formato</th><th>Preço</th><th>Alunos</th><th>Estado</th><th>Ações</th></tr></thead>
+              <tbody id="products-body"><tr><td colspan="7">A carregar...</td></tr></tbody>
+            </table>
           </div>
-          <button type="submit" class="btn btn-primary">Guardar definições</button>
-        </form>
-      </div>
+        </div>
+
+        <div class="tab-panel" id="tab-transacoes">
+          <h3>Todas as transações</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Comprador</th><th>Produtor</th><th>Produto</th><th>Valor</th><th>Comissão</th><th>Estado</th><th>Data</th></tr></thead>
+              <tbody id="orders-body"><tr><td colspan="8">A carregar...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-levantamentos">
+          <h3>Pedidos de levantamento</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Produtor</th><th>Valor</th><th>Conta</th><th>Estado</th><th>Pedido em</th><th>Ações</th></tr></thead>
+              <tbody id="withdrawals-body"><tr><td colspan="6">A carregar...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-utilizadores">
+          <h3>Utilizadores</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Email</th><th>Papel</th><th>Registado em</th><th>Ações</th></tr></thead>
+              <tbody id="users-body"><tr><td colspan="5">A carregar...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-definicoes">
+          <h3>Definições da plataforma</h3>
+          <div class="card" style="max-width:480px;">
+            <div class="alert alert-success" id="settings-success">Definições guardadas com sucesso.</div>
+            <form id="settings-form">
+              <div class="form-group">
+                <label for="settings-name">Nome da plataforma</label>
+                <input type="text" id="settings-name" />
+              </div>
+              <div class="form-group">
+                <label for="settings-commission">Comissão da plataforma (%)</label>
+                <input type="number" id="settings-commission" min="0" max="100" step="0.1" />
+                <p class="muted" style="font-size:0.8rem; margin:6px 0 0;">Percentagem retida em cada venda paga. O restante é creditado ao produtor.</p>
+              </div>
+              <div class="form-group">
+                <label>Estado dos pagamentos</label>
+                <p><span class="badge" id="stripe-status-badge">—</span></p>
+              </div>
+              <button type="submit" class="btn btn-primary">Guardar definições</button>
+            </form>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
 
@@ -137,6 +166,7 @@
   <script src="/js/icons.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/auth-guard.js"></script>
+  <script src="/js/app-shell.js"></script>
   <script src="/js/product-card.js"></script>
   <script src="/js/admin.js"></script>
 </body>
