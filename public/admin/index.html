@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Administrativo — EduWeb</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body data-require-admin="true">
+  <nav class="navbar">
+    <div class="container flex-between">
+      <a href="/admin/index.html" class="logo">Edu<span>Web</span> <span class="badge badge-neutral" style="margin-left:6px;">Admin</span></a>
+      <div class="flex gap-md">
+        <a href="/index.html" class="btn btn-ghost btn-sm">Ver site</a>
+        <div class="avatar" id="admin-avatar"></div>
+        <button class="btn btn-ghost btn-sm" id="btn-logout">Sair</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1 style="margin-bottom:4px;">Painel administrativo</h1>
+      <p style="margin-bottom:0;">Gerir cursos, aulas e utilizadores da plataforma.</p>
+    </div>
+  </header>
+
+  <div class="container section-sm">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="cursos">Cursos</button>
+      <button class="tab-btn" data-tab="utilizadores">Utilizadores</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-dashboard">
+      <div class="grid grid-4" id="stats-cards">
+        <div class="spinner"></div>
+      </div>
+      <h3 style="margin-top:40px;">Últimas inscrições</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Aluno</th><th>Curso</th><th>Data</th></tr></thead>
+          <tbody id="recent-enrollments-body"><tr><td colspan="3">A carregar...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-cursos">
+      <div class="flex-between" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:0;">Cursos</h3>
+        <button class="btn btn-primary" id="btn-new-course">+ Novo curso</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Título</th><th>Categoria</th><th>Nível</th><th>Aulas</th><th>Alunos</th><th>Estado</th><th>Ações</th></tr></thead>
+          <tbody id="courses-body"><tr><td colspan="7">A carregar...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-utilizadores">
+      <h3>Utilizadores</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nome</th><th>Email</th><th>Papel</th><th>Registado em</th><th>Ações</th></tr></thead>
+          <tbody id="users-body"><tr><td colspan="5">A carregar...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: criar/editar curso -->
+  <div class="modal-overlay" id="course-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="course-modal-title" style="margin-bottom:0;">Novo curso</h3>
+        <button class="modal-close" data-close="course-modal">&times;</button>
+      </div>
+      <div class="alert alert-error" id="course-form-error"></div>
+      <form id="course-form">
+        <input type="hidden" id="course-id" />
+        <div class="form-group">
+          <label for="course-title">Título</label>
+          <input type="text" id="course-title" required />
+        </div>
+        <div class="form-group">
+          <label for="course-description">Descrição</label>
+          <textarea id="course-description"></textarea>
+        </div>
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label for="course-category">Categoria</label>
+            <input type="text" id="course-category" placeholder="Ex: Programação" />
+          </div>
+          <div class="form-group">
+            <label for="course-level">Nível</label>
+            <select id="course-level">
+              <option value="iniciante">Iniciante</option>
+              <option value="intermedio">Intermédio</option>
+              <option value="avancado">Avançado</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="course-instructor">Nome do instrutor</label>
+          <input type="text" id="course-instructor" />
+        </div>
+        <div class="form-group">
+          <label for="course-thumbnail">URL da imagem de capa (opcional)</label>
+          <input type="url" id="course-thumbnail" placeholder="https://..." />
+        </div>
+        <div class="form-group flex gap-sm">
+          <input type="checkbox" id="course-published" style="width:auto;" />
+          <label for="course-published" style="margin-bottom:0;">Publicar curso (visível para alunos)</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Guardar curso</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: gerir aulas de um curso -->
+  <div class="modal-overlay" id="lessons-modal">
+    <div class="modal" style="max-width:680px;">
+      <div class="modal-header">
+        <h3 id="lessons-modal-title" style="margin-bottom:0;">Aulas do curso</h3>
+        <button class="modal-close" data-close="lessons-modal">&times;</button>
+      </div>
+      <ul class="lesson-list" id="lessons-list" style="margin-bottom:24px;"></ul>
+
+      <h4 id="lesson-form-title">Adicionar aula</h4>
+      <div class="alert alert-error" id="lesson-form-error"></div>
+      <form id="lesson-form">
+        <input type="hidden" id="lesson-id" />
+        <input type="hidden" id="lesson-course-id" />
+        <div class="form-group">
+          <label for="lesson-title">Título</label>
+          <input type="text" id="lesson-title" required />
+        </div>
+        <div class="form-group">
+          <label for="lesson-description">Descrição (opcional)</label>
+          <textarea id="lesson-description"></textarea>
+        </div>
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label for="lesson-type">Tipo</label>
+            <select id="lesson-type">
+              <option value="video">Vídeo</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="lesson-order">Ordem</label>
+            <input type="number" id="lesson-order" value="0" min="0" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="lesson-duration">Duração (minutos, opcional)</label>
+          <input type="number" id="lesson-duration" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="lesson-url">Link do conteúdo (YouTube ou URL direto)</label>
+          <input type="text" id="lesson-url" placeholder="https://www.youtube.com/watch?v=..." />
+        </div>
+        <div class="form-group">
+          <label for="lesson-file">Ou enviar ficheiro (vídeo mp4/webm/ogg ou PDF)</label>
+          <input type="file" id="lesson-file" accept="video/mp4,video/webm,video/ogg,application/pdf" />
+        </div>
+        <div class="flex gap-md">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Guardar aula</button>
+          <button type="button" class="btn btn-outline" id="lesson-form-reset">Cancelar edição</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth-guard.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

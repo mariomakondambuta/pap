@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aula — EduWeb</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container flex-between">
+      <a href="/index.html" class="logo">Edu<span>Web</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/painel.html">O meu painel</a></li>
+        <li><a href="/cursos.html">Cursos</a></li>
+        <li><a href="/certificados.html">Certificados</a></li>
+      </ul>
+      <div class="flex gap-md" id="nav-actions"></div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
+    </div>
+  </nav>
+
+  <div class="container" style="padding-top:32px;">
+    <div id="lesson-content">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="cert-modal">
+    <div class="modal text-center">
+      <div style="font-size:3rem;">🏆</div>
+      <h2>Parabéns, concluiu o curso!</h2>
+      <p>O seu certificado já está disponível para download.</p>
+      <div class="flex gap-md" style="justify-content:center;">
+        <a href="/certificados.html" class="btn btn-primary">Ver certificado</a>
+        <button class="btn btn-outline" id="cert-modal-close">Continuar a explorar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth-guard.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/aula.js"></script>
+</body>
+</html>

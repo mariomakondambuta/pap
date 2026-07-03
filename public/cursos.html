@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursos — EduWeb</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container flex-between">
+      <a href="/index.html" class="logo">Edu<span>Web</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/index.html">Início</a></li>
+        <li><a href="/cursos.html">Cursos</a></li>
+        <li><a href="/verificar.html">Verificar Certificado</a></li>
+      </ul>
+      <div class="flex gap-md" id="nav-actions"></div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1 style="margin-bottom:8px;">Catálogo de cursos</h1>
+      <p style="margin-bottom:24px;">Explore os cursos disponíveis e inscreva-se gratuitamente.</p>
+      <div class="grid" style="grid-template-columns: 2fr 1fr 1fr; gap:16px;">
+        <input type="search" id="filter-search" placeholder="Pesquisar cursos..." />
+        <select id="filter-category">
+          <option value="">Todas as categorias</option>
+        </select>
+        <select id="filter-level">
+          <option value="">Todos os níveis</option>
+          <option value="iniciante">Iniciante</option>
+          <option value="intermedio">Intermédio</option>
+          <option value="avancado">Avançado</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-3" id="courses-list">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div>
+        <div class="logo" style="margin-bottom:12px;">Edu<span>Web</span></div>
+        <p>Plataforma de cursos online para aprender novas competências ao seu ritmo, com certificação incluída.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <div class="flex-col gap-sm">
+          <a href="/cursos.html">Cursos</a>
+          <a href="/registar.html">Criar conta</a>
+          <a href="/login.html">Entrar</a>
+        </div>
+      </div>
+      <div>
+        <h4>Suporte</h4>
+        <div class="flex-col gap-sm">
+          <a href="/verificar.html">Verificar certificado</a>
+          <a href="mailto:suporte@eduweb.com">Contacto</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 EduWeb. Projeto desenvolvido no âmbito da Prova de Aptidão Profissional (PAP).</div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/course-card.js"></script>
+  <script src="/js/cursos.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduWeb — Aprenda ao seu ritmo, com certificado</title>
+  <meta name="description" content="EduWeb é uma plataforma de cursos online: aulas em vídeo e PDF, acompanhamento de progresso e certificado de conclusão." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container flex-between">
+      <a href="/index.html" class="logo">Edu<span>Web</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/index.html">Início</a></li>
+        <li><a href="/cursos.html">Cursos</a></li>
+        <li><a href="/verificar.html">Verificar Certificado</a></li>
+      </ul>
+      <div class="flex gap-md" id="nav-actions"></div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <div>
+        <span class="eyebrow">🎓 Plataforma de e-learning</span>
+        <h1>Aprenda novas competências, ao seu ritmo, com certificado.</h1>
+        <p style="font-size:1.05rem; max-width:520px;">
+          Cursos organizados por aulas em vídeo e PDF, acompanhamento do seu progresso
+          em tempo real e emissão automática de certificado no final.
+        </p>
+        <div class="flex gap-md" style="margin-top: 28px;">
+          <a href="/registar.html" class="btn btn-primary">Criar conta grátis</a>
+          <a href="/cursos.html" class="btn btn-outline">Ver cursos</a>
+        </div>
+        <div class="stats-row">
+          <div class="stat-item">
+            <div class="stat-value" id="stat-courses">—</div>
+            <div class="stat-label">Cursos disponíveis</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-students">—</div>
+            <div class="stat-label">Alunos inscritos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">100%</div>
+            <div class="stat-label">Online e gratuito</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-art">
+        📚 Vídeo-aulas · Documentos PDF<br />Progresso em tempo real<br />Certificado digital verificável
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="text-center" style="max-width:640px; margin: 0 auto 48px;">
+        <span class="eyebrow">Como funciona</span>
+        <h2>Do registo ao certificado em 4 passos</h2>
+      </div>
+      <div class="grid grid-4">
+        <div class="card text-center">
+          <h3>1. Crie a sua conta</h3>
+          <p>Registo gratuito em menos de um minuto.</p>
+        </div>
+        <div class="card text-center">
+          <h3>2. Escolha um curso</h3>
+          <p>Explore o catálogo e inscreva-se nos cursos que lhe interessam.</p>
+        </div>
+        <div class="card text-center">
+          <h3>3. Estude ao seu ritmo</h3>
+          <p>Assista às vídeo-aulas e consulte os materiais em PDF quando quiser.</p>
+        </div>
+        <div class="card text-center">
+          <h3>4. Receba o certificado</h3>
+          <p>Ao concluir todas as aulas, o certificado é emitido automaticamente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--color-bg-alt);">
+    <div class="container">
+      <div class="flex-between" style="margin-bottom: 32px;">
+        <div>
+          <span class="eyebrow">Catálogo</span>
+          <h2 style="margin-bottom:0;">Cursos em destaque</h2>
+        </div>
+        <a href="/cursos.html" class="btn btn-outline">Ver todos</a>
+      </div>
+      <div class="grid grid-3" id="featured-courses">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section text-center">
+    <div class="container" style="max-width:640px;">
+      <h2>Pronto para começar a aprender?</h2>
+      <p>Junte-se aos alunos que já estão a desenvolver novas competências na EduWeb.</p>
+      <a href="/registar.html" class="btn btn-primary">Criar conta grátis</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div>
+        <div class="logo" style="margin-bottom:12px;">Edu<span>Web</span></div>
+        <p>Plataforma de cursos online para aprender novas competências ao seu ritmo, com certificação incluída.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <div class="flex-col gap-sm">
+          <a href="/cursos.html">Cursos</a>
+          <a href="/registar.html">Criar conta</a>
+          <a href="/login.html">Entrar</a>
+        </div>
+      </div>
+      <div>
+        <h4>Suporte</h4>
+        <div class="flex-col gap-sm">
+          <a href="/verificar.html">Verificar certificado</a>
+          <a href="mailto:suporte@eduweb.com">Contacto</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 EduWeb. Projeto desenvolvido no âmbito da Prova de Aptidão Profissional (PAP).</div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/course-card.js"></script>
+  <script src="/js/index.js"></script>
+</body>
+</html>
