@@ -23,7 +23,7 @@ function renderNavActions() {
   }
 
   const painelLink = user.role === 'admin' ? '/admin/index.html' : '/painel.html';
-  const painelLabel = user.role === 'admin' ? 'Painel Admin' : 'O meu painel';
+  const painelLabel = user.role === 'admin' ? 'Painel Admin' : 'A minha conta';
 
   container.innerHTML = `
     <a href="${painelLink}" class="btn btn-outline btn-sm">${painelLabel}</a>

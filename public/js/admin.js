@@ -1,8 +1,3 @@
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
-  return div.innerHTML;
-}
 function initials(name) {
   if (!name) return '?';
   return name.trim().split(/\s+/).slice(0, 2).map((p) => p[0].toUpperCase()).join('');
@@ -29,255 +24,185 @@ document.querySelectorAll('[data-close]').forEach((btn) => {
   btn.addEventListener('click', () => closeModal(btn.dataset.close));
 });
 document.querySelectorAll('.modal-overlay').forEach((overlay) => {
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeModal(overlay.id);
-  });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(overlay.id); });
 });
 
 /* ---------- Dashboard ---------- */
 async function loadStats() {
   const cardsEl = document.getElementById('stats-cards');
-  const tbody = document.getElementById('recent-enrollments-body');
+  const tbody = document.getElementById('recent-sales-body');
   try {
     const stats = await Api.request('/admin/stats');
     cardsEl.innerHTML = `
-      <div class="card"><div class="stat-value">${stats.totalUsers}</div><div class="stat-label">Alunos</div></div>
-      <div class="card"><div class="stat-value">${stats.totalCourses}</div><div class="stat-label">Cursos (${stats.publishedCourses} publicados)</div></div>
-      <div class="card"><div class="stat-value">${stats.totalEnrollments}</div><div class="stat-label">Inscrições</div></div>
-      <div class="card"><div class="stat-value">${stats.totalCertificates}</div><div class="stat-label">Certificados emitidos</div></div>
+      <div class="card"><div class="stat-value">${stats.totalUsers}</div><div class="stat-label">Utilizadores</div></div>
+      <div class="card"><div class="stat-value">${stats.totalProducts}</div><div class="stat-label">Produtos (${stats.publishedProducts} publicados, ${stats.totalSellers} produtores)</div></div>
+      <div class="card"><div class="stat-value">${formatPrice(stats.totalRevenueCents)}</div><div class="stat-label">Receita total (${stats.totalSales} vendas)</div></div>
+      <div class="card"><div class="stat-value">${formatPrice(stats.totalCommissionCents)}</div><div class="stat-label">Comissão da plataforma</div></div>
     `;
-    tbody.innerHTML = stats.recentEnrollments.length
-      ? stats.recentEnrollments.map((r) => `
+    if (stats.pendingWithdrawals > 0) {
+      cardsEl.insertAdjacentHTML('afterend', `
+        <div class="alert alert-error show" style="margin-top:20px;" id="pending-withdrawals-alert">
+          ⚠️ ${stats.pendingWithdrawals} pedido(s) de levantamento pendente(s), no valor de ${formatPrice(stats.pendingWithdrawalsCents)}.
+          <a href="#" id="goto-withdrawals">Ver levantamentos →</a>
+        </div>`);
+      document.getElementById('goto-withdrawals').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelector('.tab-btn[data-tab="levantamentos"]').click();
+      });
+    }
+
+    tbody.innerHTML = stats.recentSales.length
+      ? stats.recentSales.map((s) => `
           <tr>
-            <td>${escapeHtml(r.student_name)}</td>
-            <td>${escapeHtml(r.course_title)}</td>
-            <td>${new Date(r.enrolled_at).toLocaleDateString('pt-PT')}</td>
+            <td>${escapeHtml(s.buyer_name)}</td>
+            <td>${escapeHtml(s.seller_name)}</td>
+            <td>${escapeHtml(s.product_title)}</td>
+            <td>${formatPrice(s.amount_cents, s.currency)}</td>
+            <td>${new Date(s.paid_at).toLocaleDateString('pt-PT')}</td>
           </tr>`).join('')
-      : '<tr><td colspan="3">Ainda não há inscrições.</td></tr>';
+      : '<tr><td colspan="5">Ainda não há vendas.</td></tr>';
   } catch (err) {
     cardsEl.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">${escapeHtml(err.message)}</div>`;
   }
 }
 
-/* ---------- Cursos ---------- */
-let coursesCache = [];
+/* ---------- Produtos ---------- */
+let productsCache = [];
 
-async function loadCourses() {
-  const tbody = document.getElementById('courses-body');
+async function loadProducts() {
+  const tbody = document.getElementById('products-body');
   try {
-    const { courses } = await Api.request('/courses/admin/all');
-    coursesCache = courses;
-    tbody.innerHTML = courses.length
-      ? courses.map((c) => `
+    const { products } = await Api.request('/products/admin/all');
+    productsCache = products;
+    tbody.innerHTML = products.length
+      ? products.map((p) => `
           <tr>
-            <td>${escapeHtml(c.title)}</td>
-            <td>${escapeHtml(c.category || '—')}</td>
-            <td>${escapeHtml(c.level)}</td>
-            <td>${c.lesson_count}</td>
-            <td>${c.student_count}</td>
-            <td>${c.published ? '<span class="badge badge-success">Publicado</span>' : '<span class="badge badge-warning">Rascunho</span>'}</td>
+            <td>${escapeHtml(p.title)}</td>
+            <td>${escapeHtml(p.seller_name)}</td>
+            <td>${FORMAT_LABELS[p.format] || p.format}</td>
+            <td>${p.is_free ? 'Grátis' : formatPrice(p.price_cents, p.currency)}</td>
+            <td>${p.student_count}</td>
+            <td>${p.published ? '<span class="badge badge-success">Publicado</span>' : '<span class="badge badge-warning">Rascunho</span>'}</td>
             <td>
               <div class="flex gap-sm">
-                <button class="btn btn-outline btn-sm" data-action="lessons" data-id="${c.id}">Aulas</button>
-                <button class="btn btn-outline btn-sm" data-action="edit" data-id="${c.id}">Editar</button>
-                <button class="btn btn-danger btn-sm" data-action="delete" data-id="${c.id}">Eliminar</button>
+                <button class="btn btn-outline btn-sm" data-action="toggle" data-id="${p.id}">${p.published ? 'Despublicar' : 'Publicar'}</button>
+                <button class="btn btn-danger btn-sm" data-action="delete" data-id="${p.id}">Eliminar</button>
               </div>
             </td>
           </tr>`).join('')
-      : '<tr><td colspan="7">Ainda não existem cursos. Crie o primeiro!</td></tr>';
+      : '<tr><td colspan="7">Ainda não existem produtos na plataforma.</td></tr>';
 
     tbody.querySelectorAll('button[data-action]').forEach((btn) => {
-      const course = coursesCache.find((c) => c.id === Number(btn.dataset.id));
-      if (btn.dataset.action === 'edit') btn.addEventListener('click', () => openCourseModal(course));
-      if (btn.dataset.action === 'lessons') btn.addEventListener('click', () => openLessonsModal(course));
-      if (btn.dataset.action === 'delete') btn.addEventListener('click', () => deleteCourse(course));
+      const product = productsCache.find((p) => p.id === Number(btn.dataset.id));
+      if (btn.dataset.action === 'toggle') btn.addEventListener('click', () => togglePublish(product));
+      if (btn.dataset.action === 'delete') btn.addEventListener('click', () => deleteProduct(product));
     });
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="7">${escapeHtml(err.message)}</td></tr>`;
   }
 }
 
-function openCourseModal(course = null) {
-  const errorEl = document.getElementById('course-form-error');
-  errorEl.classList.remove('show');
-  document.getElementById('course-modal-title').textContent = course ? 'Editar curso' : 'Novo curso';
-  document.getElementById('course-id').value = course?.id || '';
-  document.getElementById('course-title').value = course?.title || '';
-  document.getElementById('course-description').value = course?.description || '';
-  document.getElementById('course-category').value = course?.category || '';
-  document.getElementById('course-level').value = course?.level || 'iniciante';
-  document.getElementById('course-instructor').value = course?.instructor_name || '';
-  document.getElementById('course-thumbnail').value = course?.thumbnail_url || '';
-  document.getElementById('course-published').checked = Boolean(course?.published);
-  openModal('course-modal');
-}
-
-document.getElementById('btn-new-course').addEventListener('click', () => openCourseModal());
-
-document.getElementById('course-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const errorEl = document.getElementById('course-form-error');
-  errorEl.classList.remove('show');
-
-  const id = document.getElementById('course-id').value;
-  const payload = {
-    title: document.getElementById('course-title').value.trim(),
-    description: document.getElementById('course-description').value.trim(),
-    category: document.getElementById('course-category').value.trim(),
-    level: document.getElementById('course-level').value,
-    instructor_name: document.getElementById('course-instructor').value.trim(),
-    thumbnail_url: document.getElementById('course-thumbnail').value.trim(),
-    published: document.getElementById('course-published').checked,
-  };
-
+async function togglePublish(product) {
   try {
-    if (id) {
-      await Api.request(`/courses/${id}`, { method: 'PUT', body: payload });
-    } else {
-      await Api.request('/courses', { method: 'POST', body: payload });
-    }
-    closeModal('course-modal');
-    await loadCourses();
-  } catch (err) {
-    errorEl.textContent = err.message;
-    errorEl.classList.add('show');
-  }
-});
-
-async function deleteCourse(course) {
-  if (!confirm(`Eliminar o curso "${course.title}"? Esta ação não pode ser revertida.`)) return;
-  try {
-    await Api.request(`/courses/${course.id}`, { method: 'DELETE' });
-    await loadCourses();
+    await Api.request(`/products/${product.id}`, { method: 'PUT', body: { published: !product.published } });
+    await loadProducts();
   } catch (err) {
     alert(err.message);
   }
 }
 
-/* ---------- Aulas ---------- */
-let currentCourseId = null;
-const TYPE_ICON = { video: '🎥', pdf: '📄' };
-
-async function openLessonsModal(course) {
-  currentCourseId = course.id;
-  document.getElementById('lessons-modal-title').textContent = `Aulas — ${course.title}`;
-  document.getElementById('lesson-course-id').value = course.id;
-  resetLessonForm();
-  await loadLessons();
-  openModal('lessons-modal');
+async function deleteProduct(product) {
+  if (!confirm(`Eliminar o produto "${product.title}"? Esta ação não pode ser revertida.`)) return;
+  try {
+    await Api.request(`/products/${product.id}`, { method: 'DELETE' });
+    await loadProducts();
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
-async function loadLessons() {
-  const listEl = document.getElementById('lessons-list');
-  listEl.innerHTML = '<div class="spinner"></div>';
-  try {
-    const { lessons } = await Api.request(`/courses/${currentCourseId}`);
-    listEl.innerHTML = lessons.length
-      ? lessons.map((l) => `
-          <li class="lesson-item">
-            <span class="lesson-icon">${TYPE_ICON[l.type] || '📘'}</span>
-            <div style="flex:1;">
-              <div style="font-weight:600;">${escapeHtml(l.title)}</div>
-              <div class="muted" style="font-size:0.8rem;">Ordem ${l.order_index}${l.duration_minutes ? ` · ${l.duration_minutes} min` : ''}</div>
-            </div>
-            <div class="flex gap-sm">
-              <button class="btn btn-outline btn-sm" data-edit="${l.id}">Editar</button>
-              <button class="btn btn-danger btn-sm" data-delete="${l.id}">Eliminar</button>
-            </div>
-          </li>`).join('')
-      : '<li class="muted">Ainda não há aulas neste curso.</li>';
+/* ---------- Transações ---------- */
+const ORDER_STATUS_LABEL = { paid: 'Pago', pending: 'Pendente', failed: 'Falhou', refunded: 'Reembolsado', canceled: 'Cancelado' };
 
-    listEl.querySelectorAll('button[data-edit]').forEach((btn) => {
-      btn.addEventListener('click', () => editLesson(btn.dataset.edit));
-    });
-    listEl.querySelectorAll('button[data-delete]').forEach((btn) => {
-      btn.addEventListener('click', () => deleteLesson(btn.dataset.delete));
+async function loadOrders() {
+  const tbody = document.getElementById('orders-body');
+  try {
+    const { orders } = await Api.request('/admin/orders');
+    tbody.innerHTML = orders.length
+      ? orders.map((o) => `
+          <tr>
+            <td>#${o.id}</td>
+            <td>${escapeHtml(o.buyer_name)}</td>
+            <td>${escapeHtml(o.seller_name)}</td>
+            <td>${escapeHtml(o.product_title)}</td>
+            <td>${formatPrice(o.amount_cents, o.currency)}</td>
+            <td>${formatPrice(o.platform_fee_cents, o.currency)}</td>
+            <td><span class="badge ${o.status === 'paid' ? 'badge-success' : 'badge-neutral'}">${ORDER_STATUS_LABEL[o.status] || o.status}</span></td>
+            <td>${new Date(o.created_at).toLocaleDateString('pt-PT')}</td>
+          </tr>`).join('')
+      : '<tr><td colspan="8">Ainda não há transações.</td></tr>';
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="8">${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+/* ---------- Levantamentos ---------- */
+const WITHDRAWAL_STATUS_LABEL = { pending: 'Pendente', approved: 'Aprovado', paid: 'Pago', rejected: 'Rejeitado' };
+let withdrawalsCache = [];
+let activeWithdrawalId = null;
+
+async function loadWithdrawals() {
+  const tbody = document.getElementById('withdrawals-body');
+  try {
+    const { withdrawals } = await Api.request('/admin/withdrawals');
+    withdrawalsCache = withdrawals;
+    tbody.innerHTML = withdrawals.length
+      ? withdrawals.map((w) => `
+          <tr>
+            <td>${escapeHtml(w.user_name)}</td>
+            <td>${formatPrice(w.amount_cents)}</td>
+            <td>${w.method ? `${w.method === 'iban' ? 'IBAN' : 'MB WAY'} — ${escapeHtml(w.iban || w.phone || '')}` : '—'}</td>
+            <td><span class="badge ${w.status === 'paid' ? 'badge-success' : w.status === 'rejected' ? 'badge-danger' : 'badge-neutral'}">${WITHDRAWAL_STATUS_LABEL[w.status] || w.status}</span></td>
+            <td>${new Date(w.requested_at).toLocaleDateString('pt-PT')}</td>
+            <td>${w.status === 'pending' ? `<button class="btn btn-outline btn-sm" data-process="${w.id}">Processar</button>` : '—'}</td>
+          </tr>`).join('')
+      : '<tr><td colspan="6">Ainda não há pedidos de levantamento.</td></tr>';
+
+    tbody.querySelectorAll('button[data-process]').forEach((btn) => {
+      btn.addEventListener('click', () => openWithdrawalModal(btn.dataset.process));
     });
   } catch (err) {
-    listEl.innerHTML = `<li>${escapeHtml(err.message)}</li>`;
+    tbody.innerHTML = `<tr><td colspan="6">${escapeHtml(err.message)}</td></tr>`;
   }
 }
 
-function resetLessonForm() {
-  document.getElementById('lesson-form-title').textContent = 'Adicionar aula';
-  document.getElementById('lesson-id').value = '';
-  document.getElementById('lesson-title').value = '';
-  document.getElementById('lesson-description').value = '';
-  document.getElementById('lesson-type').value = 'video';
-  document.getElementById('lesson-order').value = 0;
-  document.getElementById('lesson-duration').value = 0;
-  document.getElementById('lesson-url').value = '';
-  document.getElementById('lesson-file').value = '';
-  document.getElementById('lesson-form-error').classList.remove('show');
+function openWithdrawalModal(id) {
+  const withdrawal = withdrawalsCache.find((w) => w.id === Number(id));
+  if (!withdrawal) return;
+  activeWithdrawalId = withdrawal.id;
+  document.getElementById('withdrawal-details').innerHTML = `
+    <p style="margin-bottom:6px;"><strong>Produtor:</strong> ${escapeHtml(withdrawal.user_name)} (${escapeHtml(withdrawal.user_email)})</p>
+    <p style="margin-bottom:6px;"><strong>Valor:</strong> ${formatPrice(withdrawal.amount_cents)}</p>
+    <p style="margin-bottom:0;"><strong>Conta:</strong> ${withdrawal.method === 'iban' ? 'IBAN' : 'MB WAY'} — ${escapeHtml(withdrawal.iban || withdrawal.phone || '')} (${escapeHtml(withdrawal.holder_name || '')})</p>
+  `;
+  document.getElementById('withdrawal-note').value = '';
+  openModal('withdrawal-modal');
 }
-document.getElementById('lesson-form-reset').addEventListener('click', resetLessonForm);
 
-async function editLesson(lessonId) {
+async function processWithdrawal(status) {
   try {
-    const { lesson } = await Api.request(`/lessons/${lessonId}`);
-    document.getElementById('lesson-form-title').textContent = 'Editar aula';
-    document.getElementById('lesson-id').value = lesson.id;
-    document.getElementById('lesson-title').value = lesson.title;
-    document.getElementById('lesson-description').value = lesson.description || '';
-    document.getElementById('lesson-type').value = lesson.type;
-    document.getElementById('lesson-order').value = lesson.order_index;
-    document.getElementById('lesson-duration').value = lesson.duration_minutes;
-    document.getElementById('lesson-url').value = lesson.content_url.startsWith('/uploads/') ? '' : lesson.content_url;
-    document.getElementById('lesson-file').value = '';
+    await Api.request(`/admin/withdrawals/${activeWithdrawalId}`, {
+      method: 'PUT',
+      body: { status, admin_note: document.getElementById('withdrawal-note').value.trim() },
+    });
+    closeModal('withdrawal-modal');
+    await loadWithdrawals();
   } catch (err) {
     alert(err.message);
   }
 }
-
-async function deleteLesson(lessonId) {
-  if (!confirm('Eliminar esta aula?')) return;
-  try {
-    await Api.request(`/lessons/${lessonId}`, { method: 'DELETE' });
-    await loadLessons();
-    await loadCourses();
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-document.getElementById('lesson-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const errorEl = document.getElementById('lesson-form-error');
-  errorEl.classList.remove('show');
-
-  const lessonId = document.getElementById('lesson-id').value;
-  const file = document.getElementById('lesson-file').files[0];
-  const url = document.getElementById('lesson-url').value.trim();
-
-  if (!file && !url) {
-    errorEl.textContent = 'Indique um link para o conteúdo ou envie um ficheiro.';
-    errorEl.classList.add('show');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('title', document.getElementById('lesson-title').value.trim());
-  formData.append('description', document.getElementById('lesson-description').value.trim());
-  formData.append('type', document.getElementById('lesson-type').value);
-  formData.append('order_index', document.getElementById('lesson-order').value);
-  formData.append('duration_minutes', document.getElementById('lesson-duration').value);
-  if (url) formData.append('content_url', url);
-  if (file) formData.append('file', file);
-
-  try {
-    if (lessonId) {
-      await Api.request(`/lessons/${lessonId}`, { method: 'PUT', body: formData, isFormData: true });
-    } else {
-      await Api.request(`/courses/${currentCourseId}/lessons`, { method: 'POST', body: formData, isFormData: true });
-    }
-    resetLessonForm();
-    await loadLessons();
-    await loadCourses();
-  } catch (err) {
-    errorEl.textContent = err.message;
-    errorEl.classList.add('show');
-  }
-});
+document.getElementById('btn-mark-paid').addEventListener('click', () => processWithdrawal('paid'));
+document.getElementById('btn-reject').addEventListener('click', () => processWithdrawal('rejected'));
 
 /* ---------- Utilizadores ---------- */
 async function loadUsers() {
@@ -288,13 +213,13 @@ async function loadUsers() {
       <tr>
         <td>${escapeHtml(u.name)}</td>
         <td>${escapeHtml(u.email)}</td>
-        <td><span class="badge ${u.role === 'admin' ? 'badge-success' : 'badge-neutral'}">${u.role === 'admin' ? 'Administrador' : 'Aluno'}</span></td>
+        <td><span class="badge ${u.role === 'admin' ? 'badge-success' : 'badge-neutral'}">${u.role === 'admin' ? 'Administrador' : 'Utilizador'}</span></td>
         <td>${new Date(u.created_at).toLocaleDateString('pt-PT')}</td>
         <td>
           <div class="flex gap-sm">
             ${u.id === user.id ? '' : `
               <button class="btn btn-outline btn-sm" data-toggle-role="${u.id}" data-role="${u.role}">
-                ${u.role === 'admin' ? 'Tornar aluno' : 'Tornar admin'}
+                ${u.role === 'admin' ? 'Tornar utilizador' : 'Tornar admin'}
               </button>
               <button class="btn btn-danger btn-sm" data-delete-user="${u.id}">Eliminar</button>
             `}
@@ -314,7 +239,7 @@ async function loadUsers() {
 }
 
 async function toggleUserRole(id, currentRole) {
-  const newRole = currentRole === 'admin' ? 'student' : 'admin';
+  const newRole = currentRole === 'admin' ? 'user' : 'admin';
   try {
     await Api.request(`/admin/users/${id}/role`, { method: 'PUT', body: { role: newRole } });
     await loadUsers();
@@ -333,6 +258,41 @@ async function deleteUser(id) {
   }
 }
 
+/* ---------- Definições ---------- */
+async function loadSettings() {
+  try {
+    const settings = await Api.request('/settings');
+    document.getElementById('settings-name').value = settings.platform_name;
+    document.getElementById('settings-commission').value = settings.commission_percent;
+    const badge = document.getElementById('stripe-status-badge');
+    badge.textContent = settings.stripe_enabled ? '✅ Stripe ativa (pagamentos reais)' : '🧪 Modo de demonstração (sem chaves Stripe)';
+    badge.className = settings.stripe_enabled ? 'badge badge-success' : 'badge badge-warning';
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+document.getElementById('settings-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    await Api.request('/admin/settings', {
+      method: 'PUT',
+      body: {
+        platform_name: document.getElementById('settings-name').value.trim(),
+        commission_percent: document.getElementById('settings-commission').value,
+      },
+    });
+    const successEl = document.getElementById('settings-success');
+    successEl.classList.add('show');
+    setTimeout(() => successEl.classList.remove('show'), 3000);
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
 loadStats();
-loadCourses();
+loadProducts();
+loadOrders();
+loadWithdrawals();
 loadUsers();
+loadSettings();

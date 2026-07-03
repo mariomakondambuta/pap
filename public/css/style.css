@@ -493,3 +493,180 @@ tr:last-child td { border-bottom: none; }
   flex-shrink: 0; font-size: 0.95rem;
 }
 .lesson-item.completed .lesson-icon { background: var(--color-success-light); color: var(--color-success); }
+
+/* ===========================================================
+   Marketplace: preços, formatos, confiança, checkout, carteira
+   =========================================================== */
+
+.price-tag {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--color-dark);
+}
+.price-tag-sm { font-size: 1rem; }
+.price-tag.is-free { color: var(--color-success); }
+
+.format-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #fff7ed;
+  color: #c2410c;
+  width: fit-content;
+}
+
+/* Selos de confiança perto do botão de compra */
+.trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+}
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+.trust-item .trust-icon { font-size: 1.1rem; }
+
+.trust-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  padding: 28px 0;
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+.trust-banner .trust-item { font-size: 0.9rem; color: var(--color-text); font-weight: 500; }
+
+/* Cartões de duas vias na landing (vender / comprar) */
+.split-cta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 720px) { .split-cta { grid-template-columns: 1fr; } }
+.split-cta-card {
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.split-cta-card.for-buyers { background: linear-gradient(135deg, var(--color-primary), #7c6ff0); }
+.split-cta-card.for-sellers { background: linear-gradient(135deg, #1e1b4b, #4338ca); }
+.split-cta-card h3 { color: #fff; font-size: 1.5rem; }
+.split-cta-card p { color: rgba(255,255,255,0.85); }
+.split-cta-card .btn { align-self: flex-start; }
+
+/* Checkout */
+.checkout-summary {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+.checkout-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-primary), #8b7ff5);
+  flex-shrink: 0;
+}
+.checkout-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.92rem;
+  padding: 8px 0;
+}
+.checkout-row.total {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-top: 1px solid var(--color-border);
+  margin-top: 8px;
+  padding-top: 16px;
+}
+.demo-card-mock {
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  background: var(--color-bg-alt);
+  margin-bottom: 20px;
+}
+.demo-card-mock input[disabled] { background: #fff; opacity: 0.7; }
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+/* Carteira */
+.wallet-hero {
+  background: linear-gradient(135deg, var(--color-dark), var(--color-primary));
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: space-between;
+  align-items: center;
+}
+.wallet-hero .wallet-balance-label { color: #c7d2fe; font-size: 0.85rem; }
+.wallet-hero .wallet-balance-value { font-family: var(--font-heading); font-size: 2.4rem; font-weight: 700; }
+
+.ledger-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+.ledger-item:last-child { border-bottom: none; }
+.ledger-amount.positive { color: var(--color-success); font-weight: 600; }
+.ledger-amount.negative { color: var(--color-danger); font-weight: 600; }
+
+.payout-account-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+
+/* Perfil do produtor (mini bio na página de produto) */
+.seller-inline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-sm);
+  margin-top: 16px;
+}

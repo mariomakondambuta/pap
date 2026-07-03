@@ -24,39 +24,59 @@
   <header class="page-header">
     <div class="container">
       <h1 style="margin-bottom:4px;">Painel administrativo</h1>
-      <p style="margin-bottom:0;">Gerir cursos, aulas e utilizadores da plataforma.</p>
+      <p style="margin-bottom:0;">Controlo total da plataforma: produtos, transações, utilizadores e comissão.</p>
     </div>
   </header>
 
   <div class="container section-sm">
     <div class="tabs">
       <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-      <button class="tab-btn" data-tab="cursos">Cursos</button>
+      <button class="tab-btn" data-tab="produtos">Produtos</button>
+      <button class="tab-btn" data-tab="transacoes">Transações</button>
+      <button class="tab-btn" data-tab="levantamentos">Levantamentos</button>
       <button class="tab-btn" data-tab="utilizadores">Utilizadores</button>
+      <button class="tab-btn" data-tab="definicoes">Definições</button>
     </div>
 
     <div class="tab-panel active" id="tab-dashboard">
       <div class="grid grid-4" id="stats-cards">
         <div class="spinner"></div>
       </div>
-      <h3 style="margin-top:40px;">Últimas inscrições</h3>
+      <h3 style="margin-top:40px;">Vendas recentes</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Aluno</th><th>Curso</th><th>Data</th></tr></thead>
-          <tbody id="recent-enrollments-body"><tr><td colspan="3">A carregar...</td></tr></tbody>
+          <thead><tr><th>Comprador</th><th>Produtor</th><th>Produto</th><th>Valor</th><th>Data</th></tr></thead>
+          <tbody id="recent-sales-body"><tr><td colspan="5">A carregar...</td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <div class="tab-panel" id="tab-cursos">
-      <div class="flex-between" style="margin-bottom:20px;">
-        <h3 style="margin-bottom:0;">Cursos</h3>
-        <button class="btn btn-primary" id="btn-new-course">+ Novo curso</button>
-      </div>
+    <div class="tab-panel" id="tab-produtos">
+      <h3>Todos os produtos da plataforma</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Título</th><th>Categoria</th><th>Nível</th><th>Aulas</th><th>Alunos</th><th>Estado</th><th>Ações</th></tr></thead>
-          <tbody id="courses-body"><tr><td colspan="7">A carregar...</td></tr></tbody>
+          <thead><tr><th>Título</th><th>Produtor</th><th>Formato</th><th>Preço</th><th>Alunos</th><th>Estado</th><th>Ações</th></tr></thead>
+          <tbody id="products-body"><tr><td colspan="7">A carregar...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-transacoes">
+      <h3>Todas as transações</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Comprador</th><th>Produtor</th><th>Produto</th><th>Valor</th><th>Comissão</th><th>Estado</th><th>Data</th></tr></thead>
+          <tbody id="orders-body"><tr><td colspan="8">A carregar...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-levantamentos">
+      <h3>Pedidos de levantamento</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Produtor</th><th>Valor</th><th>Conta</th><th>Estado</th><th>Pedido em</th><th>Ações</th></tr></thead>
+          <tbody id="withdrawals-body"><tr><td colspan="6">A carregar...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -70,114 +90,53 @@
         </table>
       </div>
     </div>
-  </div>
 
-  <!-- Modal: criar/editar curso -->
-  <div class="modal-overlay" id="course-modal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 id="course-modal-title" style="margin-bottom:0;">Novo curso</h3>
-        <button class="modal-close" data-close="course-modal">&times;</button>
+    <div class="tab-panel" id="tab-definicoes">
+      <h3>Definições da plataforma</h3>
+      <div class="card" style="max-width:480px;">
+        <div class="alert alert-success" id="settings-success">Definições guardadas com sucesso.</div>
+        <form id="settings-form">
+          <div class="form-group">
+            <label for="settings-name">Nome da plataforma</label>
+            <input type="text" id="settings-name" />
+          </div>
+          <div class="form-group">
+            <label for="settings-commission">Comissão da plataforma (%)</label>
+            <input type="number" id="settings-commission" min="0" max="100" step="0.1" />
+            <p class="muted" style="font-size:0.8rem; margin:6px 0 0;">Percentagem retida em cada venda paga. O restante é creditado ao produtor.</p>
+          </div>
+          <div class="form-group">
+            <label>Estado dos pagamentos</label>
+            <p><span class="badge" id="stripe-status-badge">—</span></p>
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar definições</button>
+        </form>
       </div>
-      <div class="alert alert-error" id="course-form-error"></div>
-      <form id="course-form">
-        <input type="hidden" id="course-id" />
-        <div class="form-group">
-          <label for="course-title">Título</label>
-          <input type="text" id="course-title" required />
-        </div>
-        <div class="form-group">
-          <label for="course-description">Descrição</label>
-          <textarea id="course-description"></textarea>
-        </div>
-        <div class="grid grid-2">
-          <div class="form-group">
-            <label for="course-category">Categoria</label>
-            <input type="text" id="course-category" placeholder="Ex: Programação" />
-          </div>
-          <div class="form-group">
-            <label for="course-level">Nível</label>
-            <select id="course-level">
-              <option value="iniciante">Iniciante</option>
-              <option value="intermedio">Intermédio</option>
-              <option value="avancado">Avançado</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="course-instructor">Nome do instrutor</label>
-          <input type="text" id="course-instructor" />
-        </div>
-        <div class="form-group">
-          <label for="course-thumbnail">URL da imagem de capa (opcional)</label>
-          <input type="url" id="course-thumbnail" placeholder="https://..." />
-        </div>
-        <div class="form-group flex gap-sm">
-          <input type="checkbox" id="course-published" style="width:auto;" />
-          <label for="course-published" style="margin-bottom:0;">Publicar curso (visível para alunos)</label>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Guardar curso</button>
-      </form>
     </div>
   </div>
 
-  <!-- Modal: gerir aulas de um curso -->
-  <div class="modal-overlay" id="lessons-modal">
-    <div class="modal" style="max-width:680px;">
+  <!-- Modal: pedido de levantamento (ver/processar) -->
+  <div class="modal-overlay" id="withdrawal-modal">
+    <div class="modal">
       <div class="modal-header">
-        <h3 id="lessons-modal-title" style="margin-bottom:0;">Aulas do curso</h3>
-        <button class="modal-close" data-close="lessons-modal">&times;</button>
+        <h3 style="margin-bottom:0;">Processar levantamento</h3>
+        <button class="modal-close" data-close="withdrawal-modal">&times;</button>
       </div>
-      <ul class="lesson-list" id="lessons-list" style="margin-bottom:24px;"></ul>
-
-      <h4 id="lesson-form-title">Adicionar aula</h4>
-      <div class="alert alert-error" id="lesson-form-error"></div>
-      <form id="lesson-form">
-        <input type="hidden" id="lesson-id" />
-        <input type="hidden" id="lesson-course-id" />
-        <div class="form-group">
-          <label for="lesson-title">Título</label>
-          <input type="text" id="lesson-title" required />
-        </div>
-        <div class="form-group">
-          <label for="lesson-description">Descrição (opcional)</label>
-          <textarea id="lesson-description"></textarea>
-        </div>
-        <div class="grid grid-2">
-          <div class="form-group">
-            <label for="lesson-type">Tipo</label>
-            <select id="lesson-type">
-              <option value="video">Vídeo</option>
-              <option value="pdf">PDF</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="lesson-order">Ordem</label>
-            <input type="number" id="lesson-order" value="0" min="0" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="lesson-duration">Duração (minutos, opcional)</label>
-          <input type="number" id="lesson-duration" min="0" value="0" />
-        </div>
-        <div class="form-group">
-          <label for="lesson-url">Link do conteúdo (YouTube ou URL direto)</label>
-          <input type="text" id="lesson-url" placeholder="https://www.youtube.com/watch?v=..." />
-        </div>
-        <div class="form-group">
-          <label for="lesson-file">Ou enviar ficheiro (vídeo mp4/webm/ogg ou PDF)</label>
-          <input type="file" id="lesson-file" accept="video/mp4,video/webm,video/ogg,application/pdf" />
-        </div>
-        <div class="flex gap-md">
-          <button type="submit" class="btn btn-primary" style="flex:1;">Guardar aula</button>
-          <button type="button" class="btn btn-outline" id="lesson-form-reset">Cancelar edição</button>
-        </div>
-      </form>
+      <div id="withdrawal-details" style="margin-bottom:20px;"></div>
+      <div class="form-group">
+        <label for="withdrawal-note">Nota (opcional)</label>
+        <textarea id="withdrawal-note" placeholder="Ex: Transferência enviada a 03/07/2026"></textarea>
+      </div>
+      <div class="flex gap-md">
+        <button class="btn btn-primary" id="btn-mark-paid" style="flex:1;">Marcar como pago</button>
+        <button class="btn btn-danger" id="btn-reject">Rejeitar</button>
+      </div>
     </div>
   </div>
 
   <script src="/js/api.js"></script>
   <script src="/js/auth-guard.js"></script>
+  <script src="/js/product-card.js"></script>
   <script src="/js/admin.js"></script>
 </body>
 </html>

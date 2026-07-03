@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Os meus certificados — EduWeb</title>
+  <title>Pagamento confirmado — EduWeb</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,34 +13,19 @@
   <nav class="navbar">
     <div class="container flex-between">
       <a href="/index.html" class="logo">Edu<span>Web</span></a>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="/painel.html">A minha conta</a></li>
-        <li><a href="/cursos.html">Explorar</a></li>
-        <li><a href="/certificados.html">Certificados</a></li>
-      </ul>
       <div class="flex gap-md" id="nav-actions"></div>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
     </div>
   </nav>
 
-  <header class="page-header">
-    <div class="container">
-      <h1 style="margin-bottom:4px;">Os meus certificados</h1>
-      <p style="margin-bottom:0;">Descarregue e partilhe os certificados dos cursos que já concluiu.</p>
+  <div class="container" style="max-width:520px; padding-top:64px; padding-bottom:64px;">
+    <div class="card text-center" id="success-card">
+      <div class="spinner"></div>
     </div>
-  </header>
-
-  <section class="section">
-    <div class="container">
-      <div class="grid grid-3" id="certificates-list">
-        <div class="spinner"></div>
-      </div>
-    </div>
-  </section>
+  </div>
 
   <script src="/js/api.js"></script>
   <script src="/js/auth-guard.js"></script>
   <script src="/js/nav.js"></script>
-  <script src="/js/certificados.js"></script>
+  <script src="/js/checkout-sucesso.js"></script>
 </body>
 </html>

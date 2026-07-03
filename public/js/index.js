@@ -1,20 +1,20 @@
-async function loadFeaturedCourses() {
-  const container = document.getElementById('featured-courses');
+async function loadFeaturedProducts() {
+  const container = document.getElementById('featured-products');
   try {
-    const { courses } = await Api.request('/courses');
-    document.getElementById('stat-courses').textContent = courses.length;
-    const totalStudents = courses.reduce((sum, c) => sum + Number(c.student_count || 0), 0);
+    const { products } = await Api.request('/products');
+    document.getElementById('stat-products').textContent = products.length;
+    const totalStudents = products.reduce((sum, p) => sum + Number(p.student_count || 0), 0);
     document.getElementById('stat-students').textContent = totalStudents;
 
-    if (courses.length === 0) {
-      container.innerHTML = `<div class="empty-state"><div class="icon">📭</div>Ainda não há cursos publicados.</div>`;
+    if (products.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div class="icon">📭</div>Ainda não há produtos publicados.</div>`;
       return;
     }
 
-    container.innerHTML = courses.slice(0, 3).map(courseCardHtml).join('');
+    container.innerHTML = products.slice(0, 6).map(productCardHtml).join('');
   } catch (err) {
-    container.innerHTML = `<div class="empty-state">Não foi possível carregar os cursos.</div>`;
+    container.innerHTML = `<div class="empty-state">Não foi possível carregar os produtos.</div>`;
   }
 }
 
-loadFeaturedCourses();
+loadFeaturedProducts();

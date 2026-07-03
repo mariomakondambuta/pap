@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>O meu painel — EduWeb</title>
+  <title>A minha conta — EduWeb</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,8 +14,8 @@
     <div class="container flex-between">
       <a href="/index.html" class="logo">Edu<span>Web</span></a>
       <ul class="nav-links" id="nav-links">
-        <li><a href="/painel.html">O meu painel</a></li>
-        <li><a href="/cursos.html">Cursos</a></li>
+        <li><a href="/painel.html">A minha conta</a></li>
+        <li><a href="/cursos.html">Explorar</a></li>
         <li><a href="/certificados.html">Certificados</a></li>
       </ul>
       <div class="flex gap-md" id="nav-actions"></div>
@@ -25,26 +25,258 @@
 
   <header class="page-header">
     <div class="container">
-      <h1 id="welcome-title" style="margin-bottom:4px;">O seu painel</h1>
-      <p style="margin-bottom:0;">Continue de onde ficou ou explore novos cursos.</p>
+      <h1 id="welcome-title" style="margin-bottom:4px;">A minha conta</h1>
+      <p style="margin-bottom:0;">A sua biblioteca, os seus produtos à venda e a sua carteira, num só lugar.</p>
     </div>
   </header>
 
-  <section class="section">
-    <div class="container">
-      <div class="flex-between" style="margin-bottom:24px;">
-        <h2 style="margin-bottom:0;">Os meus cursos</h2>
-        <a href="/cursos.html" class="btn btn-outline">Explorar mais cursos</a>
+  <div class="container section-sm">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="biblioteca">📚 Biblioteca</button>
+      <button class="tab-btn" data-tab="vender">💼 Vender</button>
+      <button class="tab-btn" data-tab="carteira">👛 Carteira</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-biblioteca">
+      <div class="flex-between" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:0;">Os meus produtos</h3>
+        <a href="/cursos.html" class="btn btn-outline">Explorar mais produtos</a>
       </div>
-      <div class="grid grid-3" id="my-courses">
+      <div class="grid grid-3" id="my-library">
         <div class="spinner"></div>
       </div>
     </div>
-  </section>
+
+    <div class="tab-panel" id="tab-vender">
+      <div class="flex-between" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:0;">Os meus produtos à venda</h3>
+        <button class="btn btn-primary" id="btn-new-product">+ Novo produto</button>
+      </div>
+      <div class="table-wrap" style="margin-bottom:40px;">
+        <table>
+          <thead><tr><th>Produto</th><th>Formato</th><th>Preço</th><th>Conteúdos</th><th>Vendas/Alunos</th><th>Estado</th><th>Ações</th></tr></thead>
+          <tbody id="my-products-body"><tr><td colspan="7">A carregar...</td></tr></tbody>
+        </table>
+      </div>
+
+      <h3>Vendas recentes</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Comprador</th><th>Produto</th><th>Valor</th><th>Estado</th><th>Data</th></tr></thead>
+          <tbody id="my-sales-body"><tr><td colspan="5">A carregar...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-carteira">
+      <div class="wallet-hero" style="margin-bottom:32px;">
+        <div>
+          <div class="wallet-balance-label">Saldo disponível</div>
+          <div class="wallet-balance-value" id="wallet-balance">—</div>
+        </div>
+        <div class="flex gap-lg" style="color:#fff;">
+          <div>
+            <div class="wallet-balance-label">Total ganho</div>
+            <div style="font-size:1.3rem; font-weight:600;" id="wallet-earned">—</div>
+          </div>
+          <div>
+            <div class="wallet-balance-label">Levantamentos pendentes</div>
+            <div style="font-size:1.3rem; font-weight:600;" id="wallet-pending">—</div>
+          </div>
+        </div>
+        <button class="btn btn-accent" id="btn-withdraw">Pedir levantamento</button>
+      </div>
+
+      <div class="grid grid-2" style="align-items:start;">
+        <div>
+          <h3>Histórico da carteira</h3>
+          <div class="card" id="wallet-ledger" style="padding:8px 20px;"></div>
+
+          <h3 style="margin-top:32px;">Os meus levantamentos</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Valor</th><th>Estado</th><th>Pedido em</th></tr></thead>
+              <tbody id="withdrawals-body"><tr><td colspan="3">A carregar...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3>Contas de pagamento</h3>
+          <div id="payout-accounts-list"></div>
+          <button class="btn btn-outline btn-block" id="btn-new-payout-account" style="margin-top:8px;">+ Adicionar conta de pagamento</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: criar/editar produto -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="product-modal-title" style="margin-bottom:0;">Novo produto</h3>
+        <button class="modal-close" data-close="product-modal">&times;</button>
+      </div>
+      <div class="alert alert-error" id="product-form-error"></div>
+      <form id="product-form">
+        <input type="hidden" id="product-id" />
+        <div class="form-group">
+          <label for="product-title">Título</label>
+          <input type="text" id="product-title" required />
+        </div>
+        <div class="form-group">
+          <label for="product-description">Descrição</label>
+          <textarea id="product-description"></textarea>
+        </div>
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label for="product-format">Formato</label>
+            <select id="product-format">
+              <option value="curso">🎬 Curso (vídeo-aulas)</option>
+              <option value="ebook">📕 E-book</option>
+              <option value="planilha">📊 Planilha</option>
+              <option value="template">📄 Template</option>
+              <option value="pack">📦 Pack</option>
+              <option value="outro">🗂️ Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="product-category">Categoria</label>
+            <input type="text" id="product-category" placeholder="Ex: Marketing" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="product-price">Preço em € (0 para gratuito)</label>
+          <input type="number" id="product-price" min="0" step="0.01" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="product-thumbnail">URL da imagem de capa (opcional)</label>
+          <input type="url" id="product-thumbnail" placeholder="https://..." />
+        </div>
+        <div class="form-group flex gap-sm">
+          <input type="checkbox" id="product-published" style="width:auto;" />
+          <label for="product-published" style="margin-bottom:0;">Publicar produto (visível no catálogo)</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Guardar produto</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: gerir conteúdos de um produto -->
+  <div class="modal-overlay" id="content-modal">
+    <div class="modal" style="max-width:680px;">
+      <div class="modal-header">
+        <h3 id="content-modal-title" style="margin-bottom:0;">Conteúdos do produto</h3>
+        <button class="modal-close" data-close="content-modal">&times;</button>
+      </div>
+      <ul class="lesson-list" id="content-list" style="margin-bottom:24px;"></ul>
+
+      <h4 id="content-form-title">Adicionar conteúdo</h4>
+      <div class="alert alert-error" id="content-form-error"></div>
+      <form id="content-form">
+        <input type="hidden" id="content-id" />
+        <input type="hidden" id="content-product-id" />
+        <div class="form-group">
+          <label for="content-title">Título</label>
+          <input type="text" id="content-title" required />
+        </div>
+        <div class="form-group">
+          <label for="content-description">Descrição (opcional)</label>
+          <textarea id="content-description"></textarea>
+        </div>
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label for="content-type">Tipo</label>
+            <select id="content-type">
+              <option value="video">🎥 Vídeo</option>
+              <option value="pdf">📄 PDF</option>
+              <option value="file">📎 Ficheiro (planilha, doc, zip...)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="content-order">Ordem</label>
+            <input type="number" id="content-order" value="0" min="0" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="content-duration">Duração (minutos, opcional)</label>
+          <input type="number" id="content-duration" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="content-url">Link do conteúdo (YouTube ou URL direto)</label>
+          <input type="text" id="content-url" placeholder="https://www.youtube.com/watch?v=..." />
+        </div>
+        <div class="form-group">
+          <label for="content-file">Ou enviar ficheiro</label>
+          <input type="file" id="content-file" />
+        </div>
+        <div class="flex gap-md">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Guardar conteúdo</button>
+          <button type="button" class="btn btn-outline" id="content-form-reset">Cancelar edição</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: adicionar conta de pagamento -->
+  <div class="modal-overlay" id="payout-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 style="margin-bottom:0;">Adicionar conta de pagamento</h3>
+        <button class="modal-close" data-close="payout-modal">&times;</button>
+      </div>
+      <div class="alert alert-error" id="payout-form-error"></div>
+      <form id="payout-form">
+        <div class="form-group">
+          <label for="payout-method">Método</label>
+          <select id="payout-method">
+            <option value="iban">Transferência bancária (IBAN)</option>
+            <option value="mbway">MB WAY</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="payout-holder">Nome do titular</label>
+          <input type="text" id="payout-holder" required />
+        </div>
+        <div class="form-group" id="payout-iban-group">
+          <label for="payout-iban">IBAN</label>
+          <input type="text" id="payout-iban" placeholder="PT50..." />
+        </div>
+        <div class="form-group hidden" id="payout-phone-group">
+          <label for="payout-phone">Número de telemóvel</label>
+          <input type="text" id="payout-phone" placeholder="+351 9xx xxx xxx" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Guardar conta</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: pedir levantamento -->
+  <div class="modal-overlay" id="withdraw-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 style="margin-bottom:0;">Pedir levantamento</h3>
+        <button class="modal-close" data-close="withdraw-modal">&times;</button>
+      </div>
+      <div class="alert alert-error" id="withdraw-form-error"></div>
+      <form id="withdraw-form">
+        <div class="form-group">
+          <label for="withdraw-amount">Valor a levantar (€)</label>
+          <input type="number" id="withdraw-amount" min="10" step="0.01" required />
+          <p class="muted" style="font-size:0.8rem; margin:6px 0 0;">Valor mínimo: 10,00 €. Saldo disponível: <strong id="withdraw-available">—</strong></p>
+        </div>
+        <div class="form-group">
+          <label for="withdraw-account">Conta de pagamento</label>
+          <select id="withdraw-account"></select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Confirmar pedido</button>
+      </form>
+    </div>
+  </div>
 
   <script src="/js/api.js"></script>
   <script src="/js/auth-guard.js"></script>
   <script src="/js/nav.js"></script>
+  <script src="/js/product-card.js"></script>
   <script src="/js/painel.js"></script>
 </body>
 </html>

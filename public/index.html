@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EduWeb — Aprenda ao seu ritmo, com certificado</title>
-  <meta name="description" content="EduWeb é uma plataforma de cursos online: aulas em vídeo e PDF, acompanhamento de progresso e certificado de conclusão." />
+  <title>EduWeb — Venda e compre infoprodutos com segurança</title>
+  <meta name="description" content="EduWeb é o marketplace onde produtores vendem cursos, e-books, planilhas e templates, e os alunos aprendem ao seu ritmo, com pagamentos seguros." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
       <a href="/index.html" class="logo">Edu<span>Web</span></a>
       <ul class="nav-links" id="nav-links">
         <li><a href="/index.html">Início</a></li>
-        <li><a href="/cursos.html">Cursos</a></li>
+        <li><a href="/cursos.html">Explorar</a></li>
         <li><a href="/verificar.html">Verificar Certificado</a></li>
       </ul>
       <div class="flex gap-md" id="nav-actions"></div>
@@ -27,59 +27,65 @@
   <header class="hero">
     <div class="container">
       <div>
-        <span class="eyebrow">🎓 Plataforma de e-learning</span>
-        <h1>Aprenda novas competências, ao seu ritmo, com certificado.</h1>
+        <span class="eyebrow">🚀 O marketplace de infoprodutos</span>
+        <h1>Venda o seu conhecimento. Aprenda com quem já sabe.</h1>
         <p style="font-size:1.05rem; max-width:520px;">
-          Cursos organizados por aulas em vídeo e PDF, acompanhamento do seu progresso
-          em tempo real e emissão automática de certificado no final.
+          Cursos, e-books, planilhas e templates — tudo num só sítio. Publique o seu
+          produto em minutos ou explore centenas de conteúdos, gratuitos ou pagos,
+          com pagamentos processados em segurança.
         </p>
         <div class="flex gap-md" style="margin-top: 28px;">
-          <a href="/registar.html" class="btn btn-primary">Criar conta grátis</a>
-          <a href="/cursos.html" class="btn btn-outline">Ver cursos</a>
+          <a href="/registar.html" class="btn btn-primary">Quero vender</a>
+          <a href="/cursos.html" class="btn btn-outline">Quero aprender</a>
         </div>
         <div class="stats-row">
           <div class="stat-item">
-            <div class="stat-value" id="stat-courses">—</div>
-            <div class="stat-label">Cursos disponíveis</div>
+            <div class="stat-value" id="stat-products">—</div>
+            <div class="stat-label">Produtos disponíveis</div>
           </div>
           <div class="stat-item">
             <div class="stat-value" id="stat-students">—</div>
             <div class="stat-label">Alunos inscritos</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">100%</div>
-            <div class="stat-label">Online e gratuito</div>
+            <div class="stat-value">🔒 100%</div>
+            <div class="stat-label">Pagamentos seguros</div>
           </div>
         </div>
       </div>
       <div class="hero-art">
-        📚 Vídeo-aulas · Documentos PDF<br />Progresso em tempo real<br />Certificado digital verificável
+        🎬 Cursos em vídeo · 📕 E-books<br />📊 Planilhas · 📄 Templates<br />Pagamento seguro com Stripe
       </div>
     </div>
   </header>
 
+  <div class="trust-banner">
+    <div class="container flex" style="justify-content:center; gap:40px; flex-wrap:wrap;">
+      <span class="trust-item"><span class="trust-icon">🔒</span> Pagamentos protegidos pela Stripe</span>
+      <span class="trust-item"><span class="trust-icon">💳</span> Nenhum dado de cartão fica guardado na EduWeb</span>
+      <span class="trust-item"><span class="trust-icon">💰</span> Comissão transparente para produtores</span>
+      <span class="trust-item"><span class="trust-icon">🎓</span> Certificado digital verificável</span>
+    </div>
+  </div>
+
   <section class="section">
     <div class="container">
-      <div class="text-center" style="max-width:640px; margin: 0 auto 48px;">
-        <span class="eyebrow">Como funciona</span>
-        <h2>Do registo ao certificado em 4 passos</h2>
+      <div class="text-center" style="max-width:640px; margin: 0 auto 40px;">
+        <span class="eyebrow">Um só lugar, dois lados</span>
+        <h2>Para quem vende e para quem aprende</h2>
       </div>
-      <div class="grid grid-4">
-        <div class="card text-center">
-          <h3>1. Crie a sua conta</h3>
-          <p>Registo gratuito em menos de um minuto.</p>
+      <div class="split-cta">
+        <div class="split-cta-card for-sellers">
+          <span class="eyebrow" style="background:rgba(255,255,255,0.15); color:#fff;">Para produtores</span>
+          <h3>Venda os seus infoprodutos</h3>
+          <p>Publique cursos, e-books, planilhas ou templates, defina o preço (ou ofereça grátis) e receba os seus pagamentos diretamente na sua carteira EduWeb.</p>
+          <a href="/registar.html" class="btn btn-accent">Criar o meu primeiro produto</a>
         </div>
-        <div class="card text-center">
-          <h3>2. Escolha um curso</h3>
-          <p>Explore o catálogo e inscreva-se nos cursos que lhe interessam.</p>
-        </div>
-        <div class="card text-center">
-          <h3>3. Estude ao seu ritmo</h3>
-          <p>Assista às vídeo-aulas e consulte os materiais em PDF quando quiser.</p>
-        </div>
-        <div class="card text-center">
-          <h3>4. Receba o certificado</h3>
-          <p>Ao concluir todas as aulas, o certificado é emitido automaticamente.</p>
+        <div class="split-cta-card for-buyers">
+          <span class="eyebrow" style="background:rgba(255,255,255,0.15); color:#fff;">Para alunos</span>
+          <h3>Aprenda ao seu ritmo</h3>
+          <p>Explore o catálogo, compre com segurança ou aceda a conteúdos gratuitos, acompanhe o seu progresso e receba certificado ao concluir.</p>
+          <a href="/cursos.html" class="btn" style="background:#fff; color:var(--color-primary);">Explorar produtos</a>
         </div>
       </div>
     </div>
@@ -90,20 +96,47 @@
       <div class="flex-between" style="margin-bottom: 32px;">
         <div>
           <span class="eyebrow">Catálogo</span>
-          <h2 style="margin-bottom:0;">Cursos em destaque</h2>
+          <h2 style="margin-bottom:0;">Produtos em destaque</h2>
         </div>
         <a href="/cursos.html" class="btn btn-outline">Ver todos</a>
       </div>
-      <div class="grid grid-3" id="featured-courses">
+      <div class="grid grid-3" id="featured-products">
         <div class="spinner"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="text-center" style="max-width:640px; margin: 0 auto 48px;">
+        <span class="eyebrow">Como funciona</span>
+        <h2>Simples para vender, simples para comprar</h2>
+      </div>
+      <div class="grid grid-4">
+        <div class="card text-center">
+          <h3>1. Crie a sua conta</h3>
+          <p>Uma única conta para vender e para comprar.</p>
+        </div>
+        <div class="card text-center">
+          <h3>2. Publique ou explore</h3>
+          <p>Crie o seu produto em minutos ou escolha entre o catálogo disponível.</p>
+        </div>
+        <div class="card text-center">
+          <h3>3. Pague ou receba com segurança</h3>
+          <p>Checkout protegido pela Stripe; produtores recebem na sua carteira.</p>
+        </div>
+        <div class="card text-center">
+          <h3>4. Acompanhe tudo</h3>
+          <p>Progresso, certificados, vendas e levantamentos, num único painel.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="section text-center">
     <div class="container" style="max-width:640px;">
-      <h2>Pronto para começar a aprender?</h2>
-      <p>Junte-se aos alunos que já estão a desenvolver novas competências na EduWeb.</p>
+      <h2>Pronto para começar?</h2>
+      <p>Junte-se a quem já está a vender e a aprender na EduWeb.</p>
       <a href="/registar.html" class="btn btn-primary">Criar conta grátis</a>
     </div>
   </section>
@@ -112,12 +145,12 @@
     <div class="container">
       <div>
         <div class="logo" style="margin-bottom:12px;">Edu<span>Web</span></div>
-        <p>Plataforma de cursos online para aprender novas competências ao seu ritmo, com certificação incluída.</p>
+        <p>O marketplace onde produtores vendem infoprodutos e alunos aprendem ao seu ritmo, com pagamentos seguros.</p>
       </div>
       <div>
         <h4>Plataforma</h4>
         <div class="flex-col gap-sm">
-          <a href="/cursos.html">Cursos</a>
+          <a href="/cursos.html">Explorar produtos</a>
           <a href="/registar.html">Criar conta</a>
           <a href="/login.html">Entrar</a>
         </div>
@@ -135,7 +168,7 @@
 
   <script src="/js/api.js"></script>
   <script src="/js/nav.js"></script>
-  <script src="/js/course-card.js"></script>
+  <script src="/js/product-card.js"></script>
   <script src="/js/index.js"></script>
 </body>
 </html>

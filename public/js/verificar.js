@@ -33,7 +33,7 @@ form.addEventListener('submit', async (e) => {
       <div class="alert alert-success show">✓ Certificado válido</div>
       <div class="card" style="padding:20px;">
         <p style="margin-bottom:6px;"><strong>Aluno:</strong> ${escapeHtml(cert.student_name)}</p>
-        <p style="margin-bottom:6px;"><strong>Curso:</strong> ${escapeHtml(cert.course_title)}</p>
+        <p style="margin-bottom:6px;"><strong>Produto:</strong> ${escapeHtml(cert.product_title)}</p>
         <p style="margin-bottom:0;"><strong>Emitido em:</strong> ${issuedDate}</p>
       </div>
     `;

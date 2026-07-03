@@ -13,20 +13,28 @@ function removeLocalFileIfAny(contentUrl) {
   fs.unlink(filePath, () => {});
 }
 
+async function assertProductOwnerOrAdmin(productId, user) {
+  const [[product]] = await pool.query('SELECT id, seller_id FROM products WHERE id = ?', [productId]);
+  if (!product) return { error: 'Produto não encontrado.', status: 404 };
+  if (product.seller_id !== user.id && user.role !== 'admin') {
+    return { error: 'Sem permissão para gerir este produto.', status: 403 };
+  }
+  return { product };
+}
+
 async function addLesson(req, res) {
   try {
-    const { courseId } = req.params;
+    const { productId } = req.params;
     const { title, description, type, order_index, duration_minutes, content_url } = req.body;
 
-    const [[course]] = await pool.query('SELECT id FROM courses WHERE id = ?', [courseId]);
-    if (!course) {
-      return res.status(404).json({ error: 'Curso não encontrado.' });
-    }
+    const check = await assertProductOwnerOrAdmin(productId, req.user);
+    if (check.error) return res.status(check.status).json({ error: check.error });
+
     if (!title || !type) {
-      return res.status(400).json({ error: 'Título e tipo da aula são obrigatórios.' });
+      return res.status(400).json({ error: 'Título e tipo do conteúdo são obrigatórios.' });
     }
-    if (!['video', 'pdf'].includes(type)) {
-      return res.status(400).json({ error: 'Tipo de aula inválido.' });
+    if (!['video', 'pdf', 'file'].includes(type)) {
+      return res.status(400).json({ error: 'Tipo de conteúdo inválido.' });
     }
 
     let finalUrl = content_url;
@@ -34,23 +42,23 @@ async function addLesson(req, res) {
       finalUrl = publicUrlFor(req.file);
     }
     if (!finalUrl) {
-      return res.status(400).json({ error: 'Envie um ficheiro ou indique um URL para o conteúdo da aula.' });
+      return res.status(400).json({ error: 'Envie um ficheiro ou indique um URL para o conteúdo.' });
     }
     if (type === 'video' && !req.file && !isYouTubeUrl(finalUrl)) {
       return res.status(400).json({ error: 'Para vídeo, envie um ficheiro ou um link do YouTube.' });
     }
 
     const [result] = await pool.query(
-      `INSERT INTO lessons (course_id, title, description, type, content_url, order_index, duration_minutes)
+      `INSERT INTO lessons (product_id, title, description, type, content_url, order_index, duration_minutes)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [courseId, title.trim(), description || null, type, finalUrl, order_index || 0, duration_minutes || 0]
+      [productId, title.trim(), description || null, type, finalUrl, order_index || 0, duration_minutes || 0]
     );
 
     const [[lesson]] = await pool.query('SELECT * FROM lessons WHERE id = ?', [result.insertId]);
     res.status(201).json({ lesson });
   } catch (err) {
-    console.error('Erro ao adicionar aula:', err);
-    res.status(500).json({ error: 'Erro ao adicionar aula.' });
+    console.error('Erro ao adicionar conteúdo:', err);
+    res.status(500).json({ error: 'Erro ao adicionar conteúdo.' });
   }
 }
 
@@ -61,8 +69,10 @@ async function updateLesson(req, res) {
 
     const [[lesson]] = await pool.query('SELECT * FROM lessons WHERE id = ?', [id]);
     if (!lesson) {
-      return res.status(404).json({ error: 'Aula não encontrada.' });
+      return res.status(404).json({ error: 'Conteúdo não encontrado.' });
     }
+    const check = await assertProductOwnerOrAdmin(lesson.product_id, req.user);
+    if (check.error) return res.status(check.status).json({ error: check.error });
 
     let finalUrl = content_url || lesson.content_url;
     if (req.file) {
@@ -87,24 +97,27 @@ async function updateLesson(req, res) {
     const [[updated]] = await pool.query('SELECT * FROM lessons WHERE id = ?', [id]);
     res.json({ lesson: updated });
   } catch (err) {
-    console.error('Erro ao atualizar aula:', err);
-    res.status(500).json({ error: 'Erro ao atualizar aula.' });
+    console.error('Erro ao atualizar conteúdo:', err);
+    res.status(500).json({ error: 'Erro ao atualizar conteúdo.' });
   }
 }
 
 async function deleteLesson(req, res) {
   try {
     const { id } = req.params;
-    const [[lesson]] = await pool.query('SELECT content_url FROM lessons WHERE id = ?', [id]);
-    const [result] = await pool.query('DELETE FROM lessons WHERE id = ?', [id]);
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Aula não encontrada.' });
+    const [[lesson]] = await pool.query('SELECT * FROM lessons WHERE id = ?', [id]);
+    if (!lesson) {
+      return res.status(404).json({ error: 'Conteúdo não encontrado.' });
     }
-    removeLocalFileIfAny(lesson?.content_url);
+    const check = await assertProductOwnerOrAdmin(lesson.product_id, req.user);
+    if (check.error) return res.status(check.status).json({ error: check.error });
+
+    await pool.query('DELETE FROM lessons WHERE id = ?', [id]);
+    removeLocalFileIfAny(lesson.content_url);
     res.json({ success: true });
   } catch (err) {
-    console.error('Erro ao eliminar aula:', err);
-    res.status(500).json({ error: 'Erro ao eliminar aula.' });
+    console.error('Erro ao eliminar conteúdo:', err);
+    res.status(500).json({ error: 'Erro ao eliminar conteúdo.' });
   }
 }
 
@@ -112,27 +125,28 @@ async function getLesson(req, res) {
   try {
     const { id } = req.params;
     const [[lesson]] = await pool.query(
-      `SELECT l.*, c.title AS course_title FROM lessons l
-       JOIN courses c ON c.id = l.course_id WHERE l.id = ?`,
+      `SELECT l.*, p.title AS product_title, p.seller_id FROM lessons l
+       JOIN products p ON p.id = l.product_id WHERE l.id = ?`,
       [id]
     );
     if (!lesson) {
-      return res.status(404).json({ error: 'Aula não encontrada.' });
+      return res.status(404).json({ error: 'Conteúdo não encontrado.' });
     }
 
-    if (req.user.role !== 'admin') {
+    const isOwnerOrAdmin = req.user.role === 'admin' || req.user.id === lesson.seller_id;
+    if (!isOwnerOrAdmin) {
       const [[enrollment]] = await pool.query(
-        'SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?',
-        [req.user.id, lesson.course_id]
+        'SELECT id FROM enrollments WHERE user_id = ? AND product_id = ?',
+        [req.user.id, lesson.product_id]
       );
       if (!enrollment) {
-        return res.status(403).json({ error: 'Precisa de se inscrever no curso para aceder a esta aula.' });
+        return res.status(403).json({ error: 'Precisa de aceder a este produto para ver este conteúdo.' });
       }
     }
 
     const [siblings] = await pool.query(
-      `SELECT id, title, order_index FROM lessons WHERE course_id = ? ORDER BY order_index ASC, id ASC`,
-      [lesson.course_id]
+      `SELECT id, title, order_index FROM lessons WHERE product_id = ? ORDER BY order_index ASC, id ASC`,
+      [lesson.product_id]
     );
     const index = siblings.findIndex((l) => l.id === lesson.id);
     const previousLesson = index > 0 ? siblings[index - 1] : null;
@@ -151,8 +165,8 @@ async function getLesson(req, res) {
       position: { index: index + 1, total: siblings.length },
     });
   } catch (err) {
-    console.error('Erro ao obter aula:', err);
-    res.status(500).json({ error: 'Erro ao carregar aula.' });
+    console.error('Erro ao obter conteúdo:', err);
+    res.status(500).json({ error: 'Erro ao carregar conteúdo.' });
   }
 }
 

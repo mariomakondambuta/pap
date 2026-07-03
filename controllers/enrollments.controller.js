@@ -1,57 +1,69 @@
 const pool = require('../config/db');
 
-async function enroll(req, res) {
+async function grantAccess(userId, productId, source = 'free') {
+  await pool.query(
+    `INSERT INTO enrollments (user_id, product_id, source) VALUES (?, ?, ?)
+     ON DUPLICATE KEY UPDATE source = source`,
+    [userId, productId, source]
+  );
+}
+
+async function enrollFree(req, res) {
   try {
-    const { id: courseId } = req.params;
-    const [[course]] = await pool.query('SELECT id, published FROM courses WHERE id = ?', [courseId]);
-    if (!course || !course.published) {
-      return res.status(404).json({ error: 'Curso não encontrado.' });
+    const { id: productId } = req.params;
+    const [[product]] = await pool.query('SELECT id, published, price_cents FROM products WHERE id = ?', [productId]);
+    if (!product || !product.published) {
+      return res.status(404).json({ error: 'Produto não encontrado.' });
+    }
+    if (product.price_cents > 0) {
+      return res.status(400).json({ error: 'Este produto é pago. Utilize o checkout para o adquirir.' });
     }
 
     const [[existing]] = await pool.query(
-      'SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?',
-      [req.user.id, courseId]
+      'SELECT id FROM enrollments WHERE user_id = ? AND product_id = ?',
+      [req.user.id, productId]
     );
     if (existing) {
-      return res.status(409).json({ error: 'Já está inscrito neste curso.' });
+      return res.status(409).json({ error: 'Já tem acesso a este produto.' });
     }
 
-    await pool.query('INSERT INTO enrollments (user_id, course_id) VALUES (?, ?)', [req.user.id, courseId]);
+    await grantAccess(req.user.id, productId, 'free');
     res.status(201).json({ success: true });
   } catch (err) {
-    console.error('Erro ao inscrever:', err);
-    res.status(500).json({ error: 'Erro ao inscrever no curso.' });
+    console.error('Erro ao aceder ao produto:', err);
+    res.status(500).json({ error: 'Erro ao aceder ao produto.' });
   }
 }
 
-async function myEnrollments(req, res) {
+async function myLibrary(req, res) {
   try {
-    const [courses] = await pool.query(
-      `SELECT c.id, c.title, c.thumbnail_url, c.category, c.level, e.enrolled_at,
+    const [products] = await pool.query(
+      `SELECT p.id, p.title, p.thumbnail_url, p.category, p.format, p.level, p.price_cents, p.currency,
+              e.enrolled_at, e.source,
               COUNT(DISTINCT l.id) AS total_lessons,
               COUNT(DISTINCT CASE WHEN lp.completed = 1 THEN lp.id END) AS completed_lessons,
               cert.certificate_code
        FROM enrollments e
-       JOIN courses c ON c.id = e.course_id
-       LEFT JOIN lessons l ON l.course_id = c.id
+       JOIN products p ON p.id = e.product_id
+       LEFT JOIN lessons l ON l.product_id = p.id
        LEFT JOIN lesson_progress lp ON lp.lesson_id = l.id AND lp.user_id = e.user_id
-       LEFT JOIN certificates cert ON cert.course_id = c.id AND cert.user_id = e.user_id
+       LEFT JOIN certificates cert ON cert.product_id = p.id AND cert.user_id = e.user_id
        WHERE e.user_id = ?
-       GROUP BY c.id, e.enrolled_at, cert.certificate_code
+       GROUP BY p.id, e.enrolled_at, e.source, cert.certificate_code
        ORDER BY e.enrolled_at DESC`,
       [req.user.id]
     );
 
-    const withProgress = courses.map((c) => ({
-      ...c,
-      progress_percent: c.total_lessons > 0 ? Math.round((c.completed_lessons / c.total_lessons) * 100) : 0,
+    const withProgress = products.map((p) => ({
+      ...p,
+      progress_percent: p.total_lessons > 0 ? Math.round((p.completed_lessons / p.total_lessons) * 100) : 0,
     }));
 
-    res.json({ courses: withProgress });
+    res.json({ products: withProgress });
   } catch (err) {
-    console.error('Erro ao listar inscrições:', err);
-    res.status(500).json({ error: 'Erro ao carregar as suas inscrições.' });
+    console.error('Erro ao listar biblioteca:', err);
+    res.status(500).json({ error: 'Erro ao carregar a sua biblioteca.' });
   }
 }
 
-module.exports = { enroll, myEnrollments };
+module.exports = { enrollFree, myLibrary, grantAccess };

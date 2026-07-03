@@ -59,7 +59,7 @@ async function loadLesson() {
     wasCompletedBefore = completed;
 
     contentEl.innerHTML = `
-      <a href="/curso.html?id=${lesson.course_id}" class="muted" style="font-size:0.9rem;">← ${escapeHtml(lesson.course_title)}</a>
+      <a href="/curso.html?id=${lesson.product_id}" class="muted" style="font-size:0.9rem;">← ${escapeHtml(lesson.product_title)}</a>
       <div class="flex-between" style="margin-top:8px; margin-bottom:20px;">
         <h1 style="margin-bottom:0;">${escapeHtml(lesson.title)}</h1>
         <span class="badge badge-neutral">Aula ${position.index} de ${position.total}</span>

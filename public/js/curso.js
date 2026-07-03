@@ -3,63 +3,93 @@ const LEVEL_LABELS_FULL = {
   intermedio: 'Intermédio',
   avancado: 'Avançado',
 };
-const TYPE_ICON = { video: '🎥', pdf: '📄' };
+const TYPE_ICON = { video: '🎥', pdf: '📄', file: '📎' };
+const TYPE_LABEL = { video: 'Vídeo-aula', pdf: 'Documento PDF', file: 'Ficheiro para descarregar' };
 
 const params = new URLSearchParams(window.location.search);
-const courseId = params.get('id');
+const productId = params.get('id');
 const contentEl = document.getElementById('course-content');
 
-if (!courseId) {
+if (!productId) {
   window.location.href = '/cursos.html';
 }
 
-function lessonItemHtml(lesson, isEnrolled) {
+function lessonItemHtml(lesson, hasAccess) {
   const icon = lesson.completed ? '✓' : TYPE_ICON[lesson.type] || '📘';
   const classes = ['lesson-item'];
   if (lesson.completed) classes.push('completed');
-  if (!isEnrolled) classes.push('locked');
 
   const inner = `
     <span class="lesson-icon">${icon}</span>
     <div style="flex:1;">
       <div style="font-weight:600;">${escapeHtml(lesson.title)}</div>
-      <div class="muted" style="font-size:0.8rem;">${lesson.type === 'video' ? 'Vídeo-aula' : 'Documento PDF'}${lesson.duration_minutes ? ` · ${lesson.duration_minutes} min` : ''}</div>
+      <div class="muted" style="font-size:0.8rem;">${TYPE_LABEL[lesson.type] || lesson.type}${lesson.duration_minutes ? ` · ${lesson.duration_minutes} min` : ''}</div>
     </div>
-    <span>${isEnrolled ? '›' : '🔒'}</span>
+    <span>${hasAccess ? '›' : '🔒'}</span>
   `;
 
-  if (isEnrolled) {
+  if (hasAccess) {
     return `<a href="/aula.html?id=${lesson.id}" class="${classes.join(' ')}">${inner}</a>`;
   }
   return `<div class="${classes.join(' ')}" style="opacity:0.6;">${inner}</div>`;
 }
 
-async function enroll() {
+async function accessFree() {
   if (!Api.isAuthenticated()) {
-    window.location.href = `/login.html?redirect=/curso.html?id=${courseId}`;
+    window.location.href = `/login.html`;
     return;
   }
-  const btn = document.getElementById('enroll-btn');
+  const btn = document.getElementById('access-btn');
   btn.disabled = true;
-  btn.textContent = 'A inscrever...';
+  btn.textContent = 'A processar...';
   try {
-    await Api.request(`/courses/${courseId}/enroll`, { method: 'POST' });
-    await loadCourse();
+    await Api.request(`/products/${productId}/enroll`, { method: 'POST' });
+    await loadProduct();
   } catch (err) {
     alert(err.message);
     btn.disabled = false;
-    btn.textContent = 'Inscrever-me gratuitamente';
+    btn.textContent = 'Aceder gratuitamente';
   }
 }
 
-async function loadCourse() {
+async function buyNow() {
+  if (!Api.isAuthenticated()) {
+    window.location.href = `/login.html`;
+    return;
+  }
+  const btn = document.getElementById('buy-btn');
+  btn.disabled = true;
+  btn.textContent = 'A preparar pagamento...';
   try {
-    const { course, lessons, isEnrolled, progress } = await Api.request(`/courses/${courseId}`);
+    const { orderId, simulated, checkoutUrl } = await Api.request('/orders/checkout', {
+      method: 'POST',
+      body: { product_id: Number(productId) },
+    });
+    if (simulated) {
+      window.location.href = `/checkout.html?order=${orderId}`;
+    } else {
+      window.location.href = checkoutUrl;
+    }
+  } catch (err) {
+    alert(err.message);
+    btn.disabled = false;
+    btn.textContent = 'Comprar agora';
+  }
+}
 
-    const levelLabel = LEVEL_LABELS_FULL[course.level] || course.level;
-    let actionHtml = `<button class="btn btn-primary btn-block" id="enroll-btn">Inscrever-me gratuitamente</button>`;
+async function loadProduct() {
+  try {
+    const { product, lessons, hasAccess, progress, pendingOrderId, isOwner } = await Api.request(`/products/${productId}`);
 
-    if (isEnrolled) {
+    const levelLabel = LEVEL_LABELS_FULL[product.level] || product.level;
+    const priceHtml = product.is_free
+      ? `<div class="price-tag is-free" style="margin-bottom:16px;">Grátis</div>`
+      : `<div class="price-tag" style="margin-bottom:16px;">${formatPrice(product.price_cents, product.currency)}</div>`;
+
+    let actionHtml;
+    if (isOwner) {
+      actionHtml = `<a href="/painel.html?tab=vender" class="btn btn-outline btn-block">Gerir este produto</a>`;
+    } else if (hasAccess) {
       actionHtml = `
         <div class="flex-between" style="margin-bottom:8px;">
           <span class="muted" style="font-size:0.85rem;">O seu progresso</span>
@@ -70,39 +100,64 @@ async function loadCourse() {
         </div>
         ${progress?.percent === 100
           ? `<a href="/certificados.html" class="btn btn-accent btn-block">🏆 Ver certificado</a>`
-          : `<span class="badge badge-success">Já está inscrito</span>`}
+          : `<span class="badge badge-success">Já tem acesso</span>`}
       `;
+    } else if (product.is_free) {
+      actionHtml = `<button class="btn btn-primary btn-block" id="access-btn">Aceder gratuitamente</button>`;
+    } else {
+      actionHtml = `<button class="btn btn-primary btn-block" id="buy-btn">${pendingOrderId ? 'Continuar compra' : 'Comprar agora'}</button>`;
     }
+
+    actionHtml += `
+      <div class="trust-strip">
+        <span class="trust-item"><span class="trust-icon">🔒</span> Pagamento seguro</span>
+        <span class="trust-item"><span class="trust-icon">⚡</span> Acesso imediato</span>
+      </div>
+    `;
 
     contentEl.innerHTML = `
       <div class="grid" style="grid-template-columns: 2fr 1fr; gap:40px; align-items:start;">
         <div>
-          <span class="badge">${escapeHtml(course.category || 'Geral')}</span>
-          <h1>${escapeHtml(course.title)}</h1>
-          <p style="font-size:1.05rem;">${escapeHtml(course.description || '')}</p>
-          <div class="flex gap-md" style="margin-bottom:32px;">
-            <span class="badge badge-neutral">${levelLabel}</span>
-            <span class="badge badge-neutral">${lessons.length} aulas</span>
-            <span class="badge badge-neutral">${course.student_count} alunos</span>
-            ${course.instructor_name ? `<span class="badge badge-neutral">👤 ${escapeHtml(course.instructor_name)}</span>` : ''}
+          <div class="flex gap-sm" style="margin-bottom:12px;">
+            <span class="format-badge">${FORMAT_LABELS[product.format] || product.format}</span>
+            <span class="badge">${escapeHtml(product.category || 'Geral')}</span>
           </div>
-          <h3>Conteúdo do curso</h3>
+          <h1>${escapeHtml(product.title)}</h1>
+          <p style="font-size:1.05rem;">${escapeHtml(product.description || '')}</p>
+          <div class="flex gap-md" style="margin-bottom:24px; flex-wrap:wrap;">
+            <span class="badge badge-neutral">${levelLabel}</span>
+            <span class="badge badge-neutral">${lessons.length} conteúdos</span>
+            <span class="badge badge-neutral">${product.student_count} alunos</span>
+          </div>
+
+          <div class="seller-inline">
+            <div class="avatar">${escapeHtml((product.seller_name || '?').slice(0, 1).toUpperCase())}</div>
+            <div>
+              <div style="font-weight:600;">${escapeHtml(product.seller_name)}</div>
+              <div class="muted" style="font-size:0.82rem;">${escapeHtml(product.seller_bio || 'Produtor na EduWeb')}</div>
+            </div>
+          </div>
+
+          <h3 style="margin-top:32px;">Conteúdo do produto</h3>
           ${lessons.length === 0
-            ? `<div class="empty-state">Ainda não há aulas disponíveis neste curso.</div>`
-            : `<ul class="lesson-list">${lessons.map((l) => `<li>${lessonItemHtml(l, isEnrolled)}</li>`).join('')}</ul>`}
+            ? `<div class="empty-state">Ainda não há conteúdos disponíveis neste produto.</div>`
+            : `<ul class="lesson-list">${lessons.map((l) => `<li>${lessonItemHtml(l, hasAccess || isOwner)}</li>`).join('')}</ul>`}
         </div>
         <div class="card">
-          <div class="course-card-thumb" style="border-radius: var(--radius-sm); margin-bottom:20px;">${escapeHtml(course.title)}</div>
+          <div class="course-card-thumb" style="border-radius: var(--radius-sm); margin-bottom:20px;">${escapeHtml(product.title)}</div>
+          ${priceHtml}
           ${actionHtml}
         </div>
       </div>
     `;
 
-    const enrollBtn = document.getElementById('enroll-btn');
-    if (enrollBtn) enrollBtn.addEventListener('click', enroll);
+    const accessBtn = document.getElementById('access-btn');
+    if (accessBtn) accessBtn.addEventListener('click', accessFree);
+    const buyBtn = document.getElementById('buy-btn');
+    if (buyBtn) buyBtn.addEventListener('click', buyNow);
   } catch (err) {
     contentEl.innerHTML = `<div class="empty-state"><div class="icon">😕</div>${escapeHtml(err.message)}</div>`;
   }
 }
 
-loadCourse();
+loadProduct();

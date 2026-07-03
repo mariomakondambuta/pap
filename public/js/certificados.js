@@ -11,7 +11,7 @@ function certificateCardHtml(cert) {
   return `
     <div class="card">
       <div style="font-size:2rem; margin-bottom:8px;">🏆</div>
-      <h3>${escapeHtml(cert.course_title)}</h3>
+      <h3>${escapeHtml(cert.product_title)}</h3>
       <p style="font-size:0.85rem;">Emitido em ${issuedDate}</p>
       <p class="muted" style="font-size:0.8rem; margin-bottom:16px;">Código: ${cert.certificate_code}</p>
       <button class="btn btn-primary btn-block" data-code="${cert.certificate_code}">Descarregar PDF</button>
@@ -53,7 +53,7 @@ async function loadCertificates() {
       container.innerHTML = `
         <div class="empty-state" style="grid-column: 1 / -1;">
           <div class="icon">🏆</div>
-          Ainda não concluiu nenhum curso.
+          Ainda não concluiu nenhum produto.
           <div style="margin-top:16px;"><a href="/painel.html" class="btn btn-primary">Continuar a aprender</a></div>
         </div>`;
       return;

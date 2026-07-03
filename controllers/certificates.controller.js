@@ -6,15 +6,15 @@ async function markLessonComplete(req, res) {
     const { id: lessonId } = req.params;
     const [[lesson]] = await pool.query('SELECT * FROM lessons WHERE id = ?', [lessonId]);
     if (!lesson) {
-      return res.status(404).json({ error: 'Aula não encontrada.' });
+      return res.status(404).json({ error: 'Conteúdo não encontrado.' });
     }
 
     const [[enrollment]] = await pool.query(
-      'SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?',
-      [req.user.id, lesson.course_id]
+      'SELECT id FROM enrollments WHERE user_id = ? AND product_id = ?',
+      [req.user.id, lesson.product_id]
     );
     if (!enrollment) {
-      return res.status(403).json({ error: 'Não está inscrito neste curso.' });
+      return res.status(403).json({ error: 'Não tem acesso a este produto.' });
     }
 
     await pool.query(
@@ -25,29 +25,29 @@ async function markLessonComplete(req, res) {
     );
 
     const [[{ total }]] = await pool.query(
-      'SELECT COUNT(*) AS total FROM lessons WHERE course_id = ?',
-      [lesson.course_id]
+      'SELECT COUNT(*) AS total FROM lessons WHERE product_id = ?',
+      [lesson.product_id]
     );
     const [[{ completed }]] = await pool.query(
       `SELECT COUNT(*) AS completed FROM lesson_progress lp
        JOIN lessons l ON l.id = lp.lesson_id
-       WHERE lp.user_id = ? AND l.course_id = ? AND lp.completed = 1`,
-      [req.user.id, lesson.course_id]
+       WHERE lp.user_id = ? AND l.product_id = ? AND lp.completed = 1`,
+      [req.user.id, lesson.product_id]
     );
 
     let certificate = null;
     if (total > 0 && completed >= total) {
       const [[existingCert]] = await pool.query(
-        'SELECT * FROM certificates WHERE user_id = ? AND course_id = ?',
-        [req.user.id, lesson.course_id]
+        'SELECT * FROM certificates WHERE user_id = ? AND product_id = ?',
+        [req.user.id, lesson.product_id]
       );
       if (existingCert) {
         certificate = existingCert;
       } else {
         const code = generateCertificateCode();
         await pool.query(
-          'INSERT INTO certificates (user_id, course_id, certificate_code) VALUES (?, ?, ?)',
-          [req.user.id, lesson.course_id, code]
+          'INSERT INTO certificates (user_id, product_id, certificate_code) VALUES (?, ?, ?)',
+          [req.user.id, lesson.product_id, code]
         );
         const [[newCert]] = await pool.query('SELECT * FROM certificates WHERE certificate_code = ?', [code]);
         certificate = newCert;
@@ -56,7 +56,7 @@ async function markLessonComplete(req, res) {
 
     res.json({ success: true, progress: { completed, total }, certificate });
   } catch (err) {
-    console.error('Erro ao concluir aula:', err);
+    console.error('Erro ao concluir conteúdo:', err);
     res.status(500).json({ error: 'Erro ao registar progresso.' });
   }
 }
@@ -64,9 +64,9 @@ async function markLessonComplete(req, res) {
 async function myCertificates(req, res) {
   try {
     const [rows] = await pool.query(
-      `SELECT cert.certificate_code, cert.issued_at, c.id AS course_id, c.title AS course_title
+      `SELECT cert.certificate_code, cert.issued_at, p.id AS product_id, p.title AS product_title
        FROM certificates cert
-       JOIN courses c ON c.id = cert.course_id
+       JOIN products p ON p.id = cert.product_id
        WHERE cert.user_id = ?
        ORDER BY cert.issued_at DESC`,
       [req.user.id]
@@ -82,10 +82,10 @@ async function downloadCertificate(req, res) {
   try {
     const { code } = req.params;
     const [[cert]] = await pool.query(
-      `SELECT cert.*, u.name AS student_name, c.title AS course_title
+      `SELECT cert.*, u.name AS student_name, p.title AS product_title
        FROM certificates cert
        JOIN users u ON u.id = cert.user_id
-       JOIN courses c ON c.id = cert.course_id
+       JOIN products p ON p.id = cert.product_id
        WHERE cert.certificate_code = ?`,
       [code]
     );
@@ -99,7 +99,7 @@ async function downloadCertificate(req, res) {
     renderCertificatePdf(
       {
         studentName: cert.student_name,
-        courseTitle: cert.course_title,
+        courseTitle: cert.product_title,
         issuedAt: cert.issued_at,
         code: cert.certificate_code,
       },
@@ -115,10 +115,10 @@ async function verifyCertificate(req, res) {
   try {
     const { code } = req.params;
     const [[cert]] = await pool.query(
-      `SELECT cert.certificate_code, cert.issued_at, u.name AS student_name, c.title AS course_title
+      `SELECT cert.certificate_code, cert.issued_at, u.name AS student_name, p.title AS product_title
        FROM certificates cert
        JOIN users u ON u.id = cert.user_id
-       JOIN courses c ON c.id = cert.course_id
+       JOIN products p ON p.id = cert.product_id
        WHERE cert.certificate_code = ?`,
       [code]
     );
