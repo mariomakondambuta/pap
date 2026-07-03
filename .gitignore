@@ -1,2 +1,13 @@
 # Ignore temp folders
-node_modules/ 
+node_modules/
+
+# Ambiente
+.env
+
+# Ficheiros enviados pelos utilizadores
+uploads/*
+!uploads/.gitkeep
+
+# Logs / SO
+*.log
+.DS_Store
