@@ -6,21 +6,35 @@ function activateTab(tabName) {
   document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tabName));
   document.querySelectorAll('.tab-panel').forEach((p) => p.classList.toggle('active', p.id === `tab-${tabName}`));
 }
-document.querySelectorAll('.tab-btn').forEach((btn) => {
+document.querySelectorAll('.tab-btn[data-tab]').forEach((btn) => {
   btn.addEventListener('click', () => activateTab(btn.dataset.tab));
 });
-const initialTab = new URLSearchParams(window.location.search).get('tab');
-if (initialTab) activateTab(initialTab);
 
-/* ---------- Modais ---------- */
-function openModal(id) { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-document.querySelectorAll('[data-close]').forEach((btn) => {
-  btn.addEventListener('click', () => closeModal(btn.dataset.close));
+/* ---------- Alternador Comprar / Vender ---------- */
+const MODE_KEY = 'eduweb_panel_mode';
+const MODE_SUBTITLE = {
+  comprar: 'A sua biblioteca e os seus certificados.',
+  vender: 'Os seus produtos à venda e a sua carteira.',
+};
+const MODE_FIRST_TAB = { comprar: 'biblioteca', vender: 'produtos' };
+
+function setMode(mode, tab) {
+  document.querySelectorAll('.mode-switch-btn').forEach((b) => b.classList.toggle('active', b.dataset.mode === mode));
+  document.querySelectorAll('.app-nav-item[data-mode]').forEach((item) => {
+    item.hidden = item.dataset.mode !== mode;
+  });
+  document.getElementById('mode-subtitle').textContent = MODE_SUBTITLE[mode];
+  activateTab(tab || MODE_FIRST_TAB[mode]);
+  localStorage.setItem(MODE_KEY, mode);
+}
+
+document.querySelectorAll('.mode-switch-btn').forEach((btn) => {
+  btn.addEventListener('click', () => setMode(btn.dataset.mode));
 });
-document.querySelectorAll('.modal-overlay').forEach((overlay) => {
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(overlay.id); });
-});
+
+const params = new URLSearchParams(window.location.search);
+const initialMode = params.get('mode') || localStorage.getItem(MODE_KEY) || 'comprar';
+setMode(initialMode, params.get('tab'));
 
 /* ---------- Biblioteca ---------- */
 function libraryCardHtml(product) {
@@ -40,7 +54,7 @@ function libraryCardHtml(product) {
       </div>
       <div class="course-card-footer">
         ${isComplete
-          ? `<a href="/certificados.html" class="btn btn-accent btn-sm">${icon('award', 16)} Certificado</a>`
+          ? `<a href="/painel.html?mode=comprar&tab=certificados" class="btn btn-accent btn-sm">${icon('award', 16)} Certificado</a>`
           : `<a href="/curso.html?id=${product.id}" class="btn btn-primary btn-sm">Continuar</a>`}
         <a href="/curso.html?id=${product.id}" class="btn btn-ghost btn-sm">Ver produto</a>
       </div>
@@ -67,88 +81,131 @@ async function loadLibrary() {
   }
 }
 
+/* ---------- Certificados ---------- */
+function myCertificateCardHtml(cert) {
+  const issuedDate = new Date(cert.issued_at).toLocaleDateString('pt-PT', {
+    day: '2-digit', month: 'long', year: 'numeric',
+  });
+  return `
+    <div class="card">
+      <div style="color:var(--color-accent); margin-bottom:8px;">${icon('award', 32)}</div>
+      <h3>${escapeHtml(cert.product_title)}</h3>
+      <p style="font-size:0.85rem;">Emitido em ${issuedDate}</p>
+      <p class="muted" style="font-size:0.8rem; margin-bottom:16px;">Código: ${cert.certificate_code}</p>
+      <button class="btn btn-primary btn-block" data-code="${cert.certificate_code}">Descarregar PDF</button>
+    </div>
+  `;
+}
+
+async function downloadCertificate(code, btn) {
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'A gerar...';
+  try {
+    const res = await fetch(`/api/certificates/${code}/download`, {
+      headers: { Authorization: `Bearer ${Api.getToken()}` },
+    });
+    if (!res.ok) throw new Error('Não foi possível gerar o certificado.');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `certificado-${code}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+async function loadMyCertificates() {
+  const container = document.getElementById('my-certificates');
+  try {
+    const { certificates } = await Api.request('/certificates/me');
+    if (certificates.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1;">
+          <div class="icon">${icon('award', 32)}</div>
+          Ainda não concluiu nenhum produto.
+          <div style="margin-top:16px;"><a href="/painel.html?mode=comprar&tab=biblioteca" class="btn btn-primary">Continuar a aprender</a></div>
+        </div>`;
+      return;
+    }
+    container.innerHTML = certificates.map(myCertificateCardHtml).join('');
+    container.querySelectorAll('button[data-code]').forEach((btn) => {
+      btn.addEventListener('click', () => downloadCertificate(btn.dataset.code, btn));
+    });
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;">Não foi possível carregar os certificados.</div>`;
+  }
+}
+
 /* ---------- Vender: produtos ---------- */
 let myProductsCache = [];
 
+function sellerProductCardHtml(product) {
+  return `
+    <div class="card seller-product-card">
+      <div class="course-card-thumb">${escapeHtml(product.title)}</div>
+      <div class="course-card-body">
+        <div class="flex-between">
+          <span class="format-badge">${formatBadgeHtml(product.format)}</span>
+          ${product.published ? '<span class="badge badge-success">Publicado</span>' : '<span class="badge badge-warning">Rascunho</span>'}
+        </div>
+        <h3 style="margin-bottom:4px;">${escapeHtml(product.title)}</h3>
+        <p class="product-id">ID #${product.id}</p>
+        <div class="flex-between muted" style="font-size:0.85rem;">
+          <span>${product.is_free ? 'Grátis' : formatPrice(product.price_cents, product.currency)}</span>
+          <span>${product.lesson_count} conteúdos · ${product.student_count} alunos</span>
+        </div>
+      </div>
+      <div class="course-card-footer">
+        <button class="icon-btn" data-action="content" data-id="${product.id}" title="Gerir conteúdos">${icon('paperclip', 16)}</button>
+        <button class="icon-btn" data-action="edit" data-id="${product.id}" title="Editar produto">${icon('edit', 16)}</button>
+        <button class="icon-btn icon-btn-danger" data-action="delete" data-id="${product.id}" title="Eliminar produto">${icon('trash', 16)}</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderMyProducts(products) {
+  const container = document.getElementById('my-products-grid');
+  container.innerHTML = products.length
+    ? products.map(sellerProductCardHtml).join('')
+    : `
+      <div class="empty-state" style="grid-column: 1 / -1;">
+        <div class="icon">${icon('briefcase', 32)}</div>
+        Ainda não criou nenhum produto. Comece agora!
+        <div style="margin-top:16px;"><a href="/produto-novo.html" class="btn btn-primary">Criar produto</a></div>
+      </div>`;
+
+  container.querySelectorAll('button[data-action]').forEach((btn) => {
+    const product = myProductsCache.find((p) => p.id === Number(btn.dataset.id));
+    if (btn.dataset.action === 'edit') btn.addEventListener('click', () => { window.location.href = `/produto-editar.html?id=${product.id}`; });
+    if (btn.dataset.action === 'content') btn.addEventListener('click', () => openContentModal(product, loadMyProducts));
+    if (btn.dataset.action === 'delete') btn.addEventListener('click', () => deleteProduct(product));
+  });
+}
+
 async function loadMyProducts() {
-  const tbody = document.getElementById('my-products-body');
   try {
     const { products } = await Api.request('/products/mine');
     myProductsCache = products;
-    tbody.innerHTML = products.length
-      ? products.map((p) => `
-          <tr>
-            <td>${escapeHtml(p.title)}</td>
-            <td>${FORMAT_LABELS[p.format] || p.format}</td>
-            <td>${p.is_free ? 'Grátis' : formatPrice(p.price_cents, p.currency)}</td>
-            <td>${p.lesson_count}</td>
-            <td>${p.student_count}</td>
-            <td>${p.published ? '<span class="badge badge-success">Publicado</span>' : '<span class="badge badge-warning">Rascunho</span>'}</td>
-            <td>
-              <div class="flex gap-sm">
-                <button class="btn btn-outline btn-sm" data-action="content" data-id="${p.id}">Conteúdos</button>
-                <button class="btn btn-outline btn-sm" data-action="edit" data-id="${p.id}">Editar</button>
-                <button class="btn btn-danger btn-sm" data-action="delete" data-id="${p.id}">Eliminar</button>
-              </div>
-            </td>
-          </tr>`).join('')
-      : '<tr><td colspan="7">Ainda não criou nenhum produto. Comece agora!</td></tr>';
-
-    tbody.querySelectorAll('button[data-action]').forEach((btn) => {
-      const product = myProductsCache.find((p) => p.id === Number(btn.dataset.id));
-      if (btn.dataset.action === 'edit') btn.addEventListener('click', () => openProductModal(product));
-      if (btn.dataset.action === 'content') btn.addEventListener('click', () => openContentModal(product));
-      if (btn.dataset.action === 'delete') btn.addEventListener('click', () => deleteProduct(product));
-    });
+    renderMyProducts(products);
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="7">${escapeHtml(err.message)}</td></tr>`;
+    document.getElementById('my-products-grid').innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;">${escapeHtml(err.message)}</div>`;
   }
 }
 
-function openProductModal(product = null) {
-  const errorEl = document.getElementById('product-form-error');
-  errorEl.classList.remove('show');
-  document.getElementById('product-modal-title').textContent = product ? 'Editar produto' : 'Novo produto';
-  document.getElementById('product-id').value = product?.id || '';
-  document.getElementById('product-title').value = product?.title || '';
-  document.getElementById('product-description').value = product?.description || '';
-  document.getElementById('product-format').value = product?.format || 'curso';
-  document.getElementById('product-category').value = product?.category || '';
-  document.getElementById('product-price').value = product ? (product.price_cents / 100).toFixed(2) : '0';
-  document.getElementById('product-thumbnail').value = product?.thumbnail_url || '';
-  document.getElementById('product-published').checked = Boolean(product?.published);
-  openModal('product-modal');
-}
-document.getElementById('btn-new-product').addEventListener('click', () => openProductModal());
-
-document.getElementById('product-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const errorEl = document.getElementById('product-form-error');
-  errorEl.classList.remove('show');
-
-  const id = document.getElementById('product-id').value;
-  const payload = {
-    title: document.getElementById('product-title').value.trim(),
-    description: document.getElementById('product-description').value.trim(),
-    format: document.getElementById('product-format').value,
-    category: document.getElementById('product-category').value.trim(),
-    price: document.getElementById('product-price').value,
-    thumbnail_url: document.getElementById('product-thumbnail').value.trim(),
-    published: document.getElementById('product-published').checked,
-  };
-
-  try {
-    if (id) {
-      await Api.request(`/products/${id}`, { method: 'PUT', body: payload });
-    } else {
-      await Api.request('/products', { method: 'POST', body: payload });
-    }
-    closeModal('product-modal');
-    await loadMyProducts();
-  } catch (err) {
-    errorEl.textContent = err.message;
-    errorEl.classList.add('show');
-  }
+document.getElementById('products-search').addEventListener('input', (e) => {
+  const term = e.target.value.trim().toLowerCase();
+  const filtered = term ? myProductsCache.filter((p) => p.title.toLowerCase().includes(term)) : myProductsCache;
+  renderMyProducts(filtered);
 });
 
 async function deleteProduct(product) {
@@ -160,131 +217,6 @@ async function deleteProduct(product) {
     alert(err.message);
   }
 }
-
-/* ---------- Vender: conteúdos do produto ---------- */
-let currentProductId = null;
-const TYPE_ICON = { video: 'video', pdf: 'file-text', file: 'paperclip' };
-
-async function openContentModal(product) {
-  currentProductId = product.id;
-  document.getElementById('content-modal-title').textContent = `Conteúdos — ${product.title}`;
-  document.getElementById('content-product-id').value = product.id;
-  resetContentForm();
-  await loadContents();
-  openModal('content-modal');
-}
-
-async function loadContents() {
-  const listEl = document.getElementById('content-list');
-  listEl.innerHTML = '<div class="spinner"></div>';
-  try {
-    const { lessons } = await Api.request(`/products/${currentProductId}`);
-    listEl.innerHTML = lessons.length
-      ? lessons.map((l) => `
-          <li class="lesson-item">
-            <span class="lesson-icon">${icon(TYPE_ICON[l.type] || 'file-text', 18)}</span>
-            <div style="flex:1;">
-              <div style="font-weight:600;">${escapeHtml(l.title)}</div>
-              <div class="muted" style="font-size:0.8rem;">Ordem ${l.order_index}${l.duration_minutes ? ` · ${l.duration_minutes} min` : ''}</div>
-            </div>
-            <div class="flex gap-sm">
-              <button class="btn btn-outline btn-sm" data-edit="${l.id}">Editar</button>
-              <button class="btn btn-danger btn-sm" data-delete="${l.id}">Eliminar</button>
-            </div>
-          </li>`).join('')
-      : '<li class="muted">Ainda não há conteúdos neste produto.</li>';
-
-    listEl.querySelectorAll('button[data-edit]').forEach((btn) => {
-      btn.addEventListener('click', () => editContent(btn.dataset.edit));
-    });
-    listEl.querySelectorAll('button[data-delete]').forEach((btn) => {
-      btn.addEventListener('click', () => deleteContent(btn.dataset.delete));
-    });
-  } catch (err) {
-    listEl.innerHTML = `<li>${escapeHtml(err.message)}</li>`;
-  }
-}
-
-function resetContentForm() {
-  document.getElementById('content-form-title').textContent = 'Adicionar conteúdo';
-  document.getElementById('content-id').value = '';
-  document.getElementById('content-title').value = '';
-  document.getElementById('content-description').value = '';
-  document.getElementById('content-type').value = 'video';
-  document.getElementById('content-order').value = 0;
-  document.getElementById('content-duration').value = 0;
-  document.getElementById('content-url').value = '';
-  document.getElementById('content-file').value = '';
-  document.getElementById('content-form-error').classList.remove('show');
-}
-document.getElementById('content-form-reset').addEventListener('click', resetContentForm);
-
-async function editContent(lessonId) {
-  try {
-    const { lesson } = await Api.request(`/lessons/${lessonId}`);
-    document.getElementById('content-form-title').textContent = 'Editar conteúdo';
-    document.getElementById('content-id').value = lesson.id;
-    document.getElementById('content-title').value = lesson.title;
-    document.getElementById('content-description').value = lesson.description || '';
-    document.getElementById('content-type').value = lesson.type;
-    document.getElementById('content-order').value = lesson.order_index;
-    document.getElementById('content-duration').value = lesson.duration_minutes;
-    document.getElementById('content-url').value = lesson.content_url.startsWith('/uploads/') ? '' : lesson.content_url;
-    document.getElementById('content-file').value = '';
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-async function deleteContent(lessonId) {
-  if (!confirm('Eliminar este conteúdo?')) return;
-  try {
-    await Api.request(`/lessons/${lessonId}`, { method: 'DELETE' });
-    await loadContents();
-    await loadMyProducts();
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-document.getElementById('content-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const errorEl = document.getElementById('content-form-error');
-  errorEl.classList.remove('show');
-
-  const contentId = document.getElementById('content-id').value;
-  const file = document.getElementById('content-file').files[0];
-  const url = document.getElementById('content-url').value.trim();
-
-  if (!file && !url) {
-    errorEl.textContent = 'Indique um link para o conteúdo ou envie um ficheiro.';
-    errorEl.classList.add('show');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('title', document.getElementById('content-title').value.trim());
-  formData.append('description', document.getElementById('content-description').value.trim());
-  formData.append('type', document.getElementById('content-type').value);
-  formData.append('order_index', document.getElementById('content-order').value);
-  formData.append('duration_minutes', document.getElementById('content-duration').value);
-  if (url) formData.append('content_url', url);
-  if (file) formData.append('file', file);
-
-  try {
-    if (contentId) {
-      await Api.request(`/lessons/${contentId}`, { method: 'PUT', body: formData, isFormData: true });
-    } else {
-      await Api.request(`/products/${currentProductId}/lessons`, { method: 'POST', body: formData, isFormData: true });
-    }
-    resetContentForm();
-    await loadContents();
-    await loadMyProducts();
-  } catch (err) {
-    errorEl.textContent = err.message;
-    errorEl.classList.add('show');
-  }
-});
 
 /* ---------- Vender: vendas ---------- */
 async function loadMySales() {
@@ -461,6 +393,7 @@ async function loadWithdrawals() {
 }
 
 loadLibrary();
+loadMyCertificates();
 loadMyProducts();
 loadMySales();
 loadWallet();

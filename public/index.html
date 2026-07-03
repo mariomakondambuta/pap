@@ -29,29 +29,14 @@
     <div class="container">
       <div>
         <span class="eyebrow">O marketplace de infoprodutos</span>
-        <h1>Venda o seu conhecimento. Aprenda com quem já sabe.</h1>
-        <p style="font-size:1.05rem; max-width:520px;">
-          Cursos, e-books, planilhas e templates — tudo num só sítio. Publique o seu
-          produto em minutos ou explore centenas de conteúdos, gratuitos ou pagos,
-          com pagamentos processados em segurança.
+        <h1>Venda o seu conhecimento.<br />Aprenda com quem já sabe.</h1>
+        <p style="font-size:1.05rem; max-width:480px;">
+          Cursos, e-books, planilhas e templates — tudo num só sítio, com
+          pagamentos processados em segurança.
         </p>
         <div class="flex gap-md" style="margin-top: 28px;">
           <a href="/registar.html" class="btn btn-primary">Quero vender</a>
           <a href="/cursos.html" class="btn btn-outline">Quero aprender</a>
-        </div>
-        <div class="stats-row">
-          <div class="stat-item">
-            <div class="stat-value" id="stat-products">—</div>
-            <div class="stat-label">Produtos disponíveis</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="stat-students">—</div>
-            <div class="stat-label">Alunos inscritos</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">100%</div>
-            <div class="stat-label">Pagamentos seguros</div>
-          </div>
         </div>
       </div>
       <div class="hero-art">
@@ -75,20 +60,37 @@
     </div>
   </div>
 
+  <div class="stats-strip">
+    <div class="container">
+      <div class="stat-item">
+        <div class="stat-value" id="stat-products">—</div>
+        <div class="stat-label">Produtos disponíveis</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="stat-students">—</div>
+        <div class="stat-label">Alunos inscritos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">100%</div>
+        <div class="stat-label">Pagamentos seguros</div>
+      </div>
+    </div>
+  </div>
+
   <section class="section">
     <div class="container">
-      <div class="text-center" style="max-width:640px; margin: 0 auto 40px;">
+      <div class="text-center reveal-on-scroll" style="max-width:640px; margin: 0 auto 40px;">
         <span class="eyebrow">Um só lugar, dois lados</span>
         <h2>Para quem vende e para quem aprende</h2>
       </div>
       <div class="split-cta">
-        <div class="split-cta-card for-sellers">
+        <div class="split-cta-card for-sellers reveal-on-scroll">
           <span class="eyebrow" style="background:rgba(255,255,255,0.15); color:#fff;">Para produtores</span>
           <h3>Venda os seus infoprodutos</h3>
           <p>Publique cursos, e-books, planilhas ou templates, defina o preço (ou ofereça grátis) e receba os seus pagamentos diretamente na sua carteira EduWeb.</p>
           <a href="/registar.html" class="btn btn-accent">Criar o meu primeiro produto</a>
         </div>
-        <div class="split-cta-card for-buyers">
+        <div class="split-cta-card for-buyers reveal-on-scroll">
           <span class="eyebrow" style="background:rgba(255,255,255,0.15); color:#fff;">Para alunos</span>
           <h3>Aprenda ao seu ritmo</h3>
           <p>Explore o catálogo, compre com segurança ou aceda a conteúdos gratuitos, acompanhe o seu progresso e receba certificado ao concluir.</p>
@@ -100,7 +102,7 @@
 
   <section class="section" style="background: var(--color-bg-alt);">
     <div class="container">
-      <div class="flex-between" style="margin-bottom: 32px;">
+      <div class="flex-between reveal-on-scroll" style="margin-bottom: 32px;">
         <div>
           <span class="eyebrow">Catálogo</span>
           <h2 style="margin-bottom:0;">Produtos em destaque</h2>
@@ -115,24 +117,24 @@
 
   <section class="section">
     <div class="container">
-      <div class="text-center" style="max-width:640px; margin: 0 auto 48px;">
+      <div class="text-center reveal-on-scroll" style="max-width:640px; margin: 0 auto 48px;">
         <span class="eyebrow">Como funciona</span>
         <h2>Simples para vender, simples para comprar</h2>
       </div>
       <div class="grid grid-4">
-        <div class="card text-center">
+        <div class="card text-center reveal-on-scroll">
           <h3>1. Crie a sua conta</h3>
           <p>Uma única conta para vender e para comprar.</p>
         </div>
-        <div class="card text-center">
+        <div class="card text-center reveal-on-scroll">
           <h3>2. Publique ou explore</h3>
           <p>Crie o seu produto em minutos ou escolha entre o catálogo disponível.</p>
         </div>
-        <div class="card text-center">
+        <div class="card text-center reveal-on-scroll">
           <h3>3. Pague ou receba com segurança</h3>
           <p>Checkout protegido pela Stripe; produtores recebem na sua carteira.</p>
         </div>
-        <div class="card text-center">
+        <div class="card text-center reveal-on-scroll">
           <h3>4. Acompanhe tudo</h3>
           <p>Progresso, certificados, vendas e levantamentos, num único painel.</p>
         </div>
@@ -141,7 +143,7 @@
   </section>
 
   <section class="section text-center">
-    <div class="container" style="max-width:640px;">
+    <div class="container reveal-on-scroll" style="max-width:640px;">
       <h2>Pronto para começar?</h2>
       <p>Junte-se a quem já está a vender e a aprender na EduWeb.</p>
       <a href="/registar.html" class="btn btn-primary">Criar conta grátis</a>
@@ -179,5 +181,6 @@
   <script src="/js/nav.js"></script>
   <script src="/js/product-card.js"></script>
   <script src="/js/index.js"></script>
+  <script src="/js/scroll-reveal.js"></script>
 </body>
 </html>

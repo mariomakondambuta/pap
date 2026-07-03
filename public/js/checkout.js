@@ -20,6 +20,13 @@ function summaryHtml(order) {
   `;
 }
 
+function showCheckoutError(message) {
+  const errorEl = document.getElementById('checkout-error');
+  if (!errorEl) return;
+  errorEl.textContent = message;
+  errorEl.classList.add('show');
+}
+
 async function payWithStripe(productId) {
   const btn = document.getElementById('pay-btn');
   btn.disabled = true;
@@ -28,7 +35,7 @@ async function payWithStripe(productId) {
     const { checkoutUrl } = await Api.request('/orders/checkout', { method: 'POST', body: { product_id: productId } });
     window.location.href = checkoutUrl;
   } catch (err) {
-    alert(err.message);
+    showCheckoutError(err.message);
     btn.disabled = false;
     btn.textContent = 'Pagar com cartão';
   }
@@ -42,7 +49,7 @@ async function payWithSimulation() {
     await Api.request(`/orders/${orderId}/simulate-pay`, { method: 'POST' });
     window.location.href = `/checkout-sucesso.html?order=${orderId}`;
   } catch (err) {
-    alert(err.message);
+    showCheckoutError(err.message);
     btn.disabled = false;
     btn.textContent = 'Confirmar pagamento (simulado)';
   }
@@ -66,7 +73,9 @@ async function loadOrder() {
       cardEl.innerHTML = `
         <h2>Finalizar compra</h2>
         ${summaryHtml(order)}
+        <div class="alert alert-error" id="checkout-error"></div>
         <button class="btn btn-primary btn-block" id="pay-btn" style="margin-top:20px;">Pagar com cartão</button>
+        <a href="/curso.html?id=${order.product_id}" class="btn btn-ghost btn-block" style="margin-top:8px;">Cancelar e voltar ao produto</a>
         <div class="trust-strip">
           <span class="trust-item"><span class="trust-icon">${icon('lock', 16)}</span> Processado com segurança pela Stripe</span>
         </div>
@@ -89,7 +98,9 @@ async function loadOrder() {
           <div class="form-group" style="margin-bottom:0;"><label>CVC</label><input type="text" value="123" disabled /></div>
         </div>
       </div>
+      <div class="alert alert-error" id="checkout-error"></div>
       <button class="btn btn-primary btn-block" id="pay-btn">Confirmar pagamento (simulado)</button>
+      <a href="/curso.html?id=${order.product_id}" class="btn btn-ghost btn-block" style="margin-top:8px;">Cancelar e voltar ao produto</a>
       <div class="trust-strip">
         <span class="trust-item"><span class="trust-icon">${icon('lock', 16)}</span> Em produção, isto é processado pela Stripe</span>
       </div>

@@ -42,6 +42,34 @@ quanto o produtor recebe por venda — inspirada em
 [shopify.com/pt/precos](https://www.shopify.com/pt/precos) e
 [stripe.com/en-pt/pricing](https://stripe.com/en-pt/pricing).
 
+Dentro de `/painel.html`, a mesma conta alterna entre uma área **Comprar**
+(biblioteca e certificados) e uma área **Vender** (produtos e carteira),
+tal como a Hotmart separa "Sou Produtor(a)" de "Sou Afiliado(a)" — nunca
+misturando as duas no mesmo ecrã. Criar um produto é um fluxo em duas
+páginas: primeiro escolhe-se o formato (`/produto-novo.html`), depois
+editam-se os detalhes num ecrã de duas colunas ao estilo do editor de
+produto da Shopify (`/produto-editar.html`).
+
+### Site institucional vs. aplicação (nota para produção)
+
+Neste ambiente de desenvolvimento, todo o site corre sob o mesmo domínio.
+Em produção, recomenda-se separar por subdomínio, à semelhança de
+`shopify.com` (marketing) vs. `admin.shopify.com` (aplicação):
+
+- **Domínio principal** (`eduweb.com`): páginas institucionais/marketing —
+  `index.html`, `cursos.html`, `curso.html`, `precos.html`,
+  `verificar.html`, `login.html`, `registar.html`.
+- **Subdomínio da aplicação** (`app.eduweb.com`): `painel.html`,
+  `produto-novo.html`, `produto-editar.html`, `admin/`, `checkout.html`,
+  `checkout-sucesso.html`, `aula.html`.
+
+Isto separa-se com um proxy reverso (nginx, Cloudflare, etc.) que
+encaminha os dois grupos de rotas para a mesma aplicação Node.js — não
+implica alterações ao código, só ao routing/DNS. Por isso, dentro da
+aplicação, o logótipo em `/painel.html` e `/admin/index.html` aponta para
+a própria área (`/painel.html` / `/admin/index.html`), e não para a
+homepage de marketing.
+
 ## Stack tecnológico
 
 | Camada | Tecnologia |
@@ -72,9 +100,14 @@ pap/
     ├── css/style.css          # design system monocromático + app shell
     ├── js/
     │   ├── icons.js           # ícones SVG inline (sem emojis)
-    │   └── app-shell.js       # topbar + sidebar/drawer do painel e do admin
+    │   ├── app-shell.js       # topbar + sidebar/drawer + menu de conta
+    │   ├── modal-utils.js     # abrir/fechar modais (partilhado)
+    │   ├── content-manager.js # modal de gestão de conteúdos (partilhado)
+    │   └── scroll-reveal.js   # animação subtil ao aparecer no scroll
     ├── precos.html            # página de preços (comissão, exemplos, FAQ)
-    ├── painel.html            # área pessoal: Biblioteca / Vender / Carteira
+    ├── painel.html            # área pessoal: alterna Comprar / Vender
+    ├── produto-novo.html      # passo 1: escolher o formato do produto
+    ├── produto-editar.html    # passo 2: editar produto (estilo Shopify)
     └── admin/index.html       # painel administrativo da plataforma
 ```
 
@@ -165,9 +198,11 @@ modos — no modo real, isso é sempre feito pela Stripe.
 
 ## Fluxo de utilização
 
-1. **Produtor**: cria conta, vai a "A minha conta → Vender", cria um
-   produto (curso, e-book, planilha, template ou pack), define o preço
-   (0 € para gratuito) e adiciona os conteúdos (vídeo, PDF ou ficheiro).
+1. **Produtor**: cria conta, alterna para a área **Vender** em
+   `/painel.html`, cria um produto — escolhe primeiro o formato (curso,
+   e-book, planilha, template ou pack) e depois edita os detalhes, define
+   o preço (0 € para gratuito) e adiciona os conteúdos (vídeo, PDF ou
+   ficheiro).
 2. **Comprador**: explora o catálogo (`/cursos.html`), filtra por
    formato/preço/categoria e acede a um produto:
    - Se for **gratuito**, ganha acesso imediato.

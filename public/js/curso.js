@@ -99,7 +99,7 @@ async function loadProduct() {
           <div class="progress-bar-fill" style="width:${progress?.percent ?? 0}%;"></div>
         </div>
         ${progress?.percent === 100
-          ? `<a href="/certificados.html" class="btn btn-accent btn-block">${icon('award', 18)} Ver certificado</a>`
+          ? `<a href="/painel.html?mode=comprar&tab=certificados" class="btn btn-accent btn-block">${icon('award', 18)} Ver certificado</a>`
           : `<span class="badge badge-success">Já tem acesso</span>`}
       `;
     } else if (product.is_free) {
