@@ -7,7 +7,7 @@ async function loadFeaturedProducts() {
     document.getElementById('stat-students').textContent = totalStudents;
 
     if (products.length === 0) {
-      container.innerHTML = `<div class="empty-state"><div class="icon">📭</div>Ainda não há produtos publicados.</div>`;
+      container.innerHTML = `<div class="empty-state"><div class="icon">${icon('inbox', 32)}</div>Ainda não há produtos publicados.</div>`;
       return;
     }
 

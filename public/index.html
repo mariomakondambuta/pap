@@ -20,14 +20,14 @@
         <li><a href="/verificar.html">Verificar Certificado</a></li>
       </ul>
       <div class="flex gap-md" id="nav-actions"></div>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     </div>
   </nav>
 
   <header class="hero">
     <div class="container">
       <div>
-        <span class="eyebrow">🚀 O marketplace de infoprodutos</span>
+        <span class="eyebrow">O marketplace de infoprodutos</span>
         <h1>Venda o seu conhecimento. Aprenda com quem já sabe.</h1>
         <p style="font-size:1.05rem; max-width:520px;">
           Cursos, e-books, planilhas e templates — tudo num só sítio. Publique o seu
@@ -48,23 +48,29 @@
             <div class="stat-label">Alunos inscritos</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">🔒 100%</div>
+            <div class="stat-value">100%</div>
             <div class="stat-label">Pagamentos seguros</div>
           </div>
         </div>
       </div>
       <div class="hero-art">
-        🎬 Cursos em vídeo · 📕 E-books<br />📊 Planilhas · 📄 Templates<br />Pagamento seguro com Stripe
+        <ul class="hero-art-list">
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polygon points="10,8.5 16,12 10,15.5"/></svg> Cursos em vídeo</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22z"/><path d="M4 4.5v15"/></svg> E-books</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="12"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="18" y1="20" x2="18" y2="4"/></svg> Planilhas</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> Templates</li>
+        </ul>
+        <div class="hero-art-footer">Pagamento seguro com Stripe</div>
       </div>
     </div>
   </header>
 
   <div class="trust-banner">
     <div class="container flex" style="justify-content:center; gap:40px; flex-wrap:wrap;">
-      <span class="trust-item"><span class="trust-icon">🔒</span> Pagamentos protegidos pela Stripe</span>
-      <span class="trust-item"><span class="trust-icon">💳</span> Nenhum dado de cartão fica guardado na EduWeb</span>
-      <span class="trust-item"><span class="trust-icon">💰</span> Comissão transparente para produtores</span>
-      <span class="trust-item"><span class="trust-icon">🎓</span> Certificado digital verificável</span>
+      <span class="trust-item"><span class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span> Pagamentos protegidos pela Stripe</span>
+      <span class="trust-item"><span class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span> Nenhum dado de cartão fica guardado na EduWeb</span>
+      <span class="trust-item"><span class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/></svg></span> Comissão transparente para produtores</span>
+      <span class="trust-item"><span class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg></span> Certificado digital verificável</span>
     </div>
   </div>
 
@@ -166,6 +172,7 @@
     <div class="footer-bottom">&copy; 2026 EduWeb. Projeto desenvolvido no âmbito da Prova de Aptidão Profissional (PAP).</div>
   </footer>
 
+  <script src="/js/icons.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/nav.js"></script>
   <script src="/js/product-card.js"></script>

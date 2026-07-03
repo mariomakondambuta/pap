@@ -1,5 +1,5 @@
 const user = Api.getUser();
-document.getElementById('welcome-title').textContent = `Olá, ${user?.name?.split(' ')[0] || ''} 👋`;
+document.getElementById('welcome-title').textContent = `Olá, ${user?.name?.split(' ')[0] || ''}`;
 
 /* ---------- Tabs ---------- */
 function activateTab(tabName) {
@@ -30,7 +30,7 @@ function libraryCardHtml(product) {
     <div class="card course-card">
       <div class="course-card-thumb">${escapeHtml(product.title)}</div>
       <div class="course-card-body">
-        <span class="format-badge">${FORMAT_LABELS[product.format] || product.format}</span>
+        <span class="format-badge">${formatBadgeHtml(product.format)}</span>
         <h3 style="margin-bottom:4px;">${escapeHtml(product.title)}</h3>
         <div class="flex-between" style="font-size:0.8rem;">
           <span class="muted">${product.completed_lessons}/${product.total_lessons} concluídos</span>
@@ -40,7 +40,7 @@ function libraryCardHtml(product) {
       </div>
       <div class="course-card-footer">
         ${isComplete
-          ? `<a href="/certificados.html" class="btn btn-accent btn-sm">🏆 Certificado</a>`
+          ? `<a href="/certificados.html" class="btn btn-accent btn-sm">${icon('award', 16)} Certificado</a>`
           : `<a href="/curso.html?id=${product.id}" class="btn btn-primary btn-sm">Continuar</a>`}
         <a href="/curso.html?id=${product.id}" class="btn btn-ghost btn-sm">Ver produto</a>
       </div>
@@ -55,7 +55,7 @@ async function loadLibrary() {
     if (products.length === 0) {
       container.innerHTML = `
         <div class="empty-state" style="grid-column: 1 / -1;">
-          <div class="icon">📚</div>
+          <div class="icon">${icon('book-open', 32)}</div>
           Ainda não tem produtos na sua biblioteca.
           <div style="margin-top:16px;"><a href="/cursos.html" class="btn btn-primary">Explorar produtos</a></div>
         </div>`;
@@ -163,7 +163,7 @@ async function deleteProduct(product) {
 
 /* ---------- Vender: conteúdos do produto ---------- */
 let currentProductId = null;
-const TYPE_ICON = { video: '🎥', pdf: '📄', file: '📎' };
+const TYPE_ICON = { video: 'video', pdf: 'file-text', file: 'paperclip' };
 
 async function openContentModal(product) {
   currentProductId = product.id;
@@ -182,7 +182,7 @@ async function loadContents() {
     listEl.innerHTML = lessons.length
       ? lessons.map((l) => `
           <li class="lesson-item">
-            <span class="lesson-icon">${TYPE_ICON[l.type] || '📘'}</span>
+            <span class="lesson-icon">${icon(TYPE_ICON[l.type] || 'file-text', 18)}</span>
             <div style="flex:1;">
               <div style="font-weight:600;">${escapeHtml(l.title)}</div>
               <div class="muted" style="font-size:0.8rem;">Ordem ${l.order_index}${l.duration_minutes ? ` · ${l.duration_minutes} min` : ''}</div>

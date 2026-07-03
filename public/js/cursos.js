@@ -24,7 +24,7 @@ async function loadProducts() {
     }
 
     if (products.length === 0) {
-      listEl.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="icon">🔍</div>Nenhum produto encontrado com estes filtros.</div>`;
+      listEl.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="icon">${icon('search', 32)}</div>Nenhum produto encontrado com estes filtros.</div>`;
       return;
     }
     listEl.innerHTML = products.map(productCardHtml).join('');

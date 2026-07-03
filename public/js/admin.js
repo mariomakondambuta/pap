@@ -41,9 +41,10 @@ async function loadStats() {
     `;
     if (stats.pendingWithdrawals > 0) {
       cardsEl.insertAdjacentHTML('afterend', `
-        <div class="alert alert-error show" style="margin-top:20px;" id="pending-withdrawals-alert">
-          ⚠️ ${stats.pendingWithdrawals} pedido(s) de levantamento pendente(s), no valor de ${formatPrice(stats.pendingWithdrawalsCents)}.
-          <a href="#" id="goto-withdrawals">Ver levantamentos →</a>
+        <div class="alert alert-error show" style="margin-top:20px; display:flex; align-items:center; gap:8px;" id="pending-withdrawals-alert">
+          ${icon('alert-triangle', 18)}
+          <span>${stats.pendingWithdrawals} pedido(s) de levantamento pendente(s), no valor de ${formatPrice(stats.pendingWithdrawalsCents)}.
+          <a href="#" id="goto-withdrawals">Ver levantamentos ${icon('chevron-right', 14)}</a></span>
         </div>`);
       document.getElementById('goto-withdrawals').addEventListener('click', (e) => {
         e.preventDefault();
@@ -265,7 +266,9 @@ async function loadSettings() {
     document.getElementById('settings-name').value = settings.platform_name;
     document.getElementById('settings-commission').value = settings.commission_percent;
     const badge = document.getElementById('stripe-status-badge');
-    badge.textContent = settings.stripe_enabled ? '✅ Stripe ativa (pagamentos reais)' : '🧪 Modo de demonstração (sem chaves Stripe)';
+    badge.innerHTML = settings.stripe_enabled
+      ? `${icon('check-circle', 14)} Stripe ativa (pagamentos reais)`
+      : `${icon('flask', 14)} Modo de demonstração (sem chaves Stripe)`;
     badge.className = settings.stripe_enabled ? 'badge badge-success' : 'badge badge-warning';
   } catch (err) {
     console.error(err);

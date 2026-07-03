@@ -55,7 +55,7 @@ async function loadOrder() {
     if (order.status === 'paid') {
       cardEl.innerHTML = `
         <div class="text-center">
-          <div style="font-size:2.5rem;">✅</div>
+          <div style="color:var(--color-success);">${icon('check-circle', 40)}</div>
           <h2>Já tem acesso a este produto</h2>
           <a href="/curso.html?id=${order.product_id}" class="btn btn-primary">Aceder ao produto</a>
         </div>`;
@@ -68,7 +68,7 @@ async function loadOrder() {
         ${summaryHtml(order)}
         <button class="btn btn-primary btn-block" id="pay-btn" style="margin-top:20px;">Pagar com cartão</button>
         <div class="trust-strip">
-          <span class="trust-item"><span class="trust-icon">🔒</span> Processado com segurança pela Stripe</span>
+          <span class="trust-item"><span class="trust-icon">${icon('lock', 16)}</span> Processado com segurança pela Stripe</span>
         </div>
       `;
       document.getElementById('pay-btn').addEventListener('click', () => payWithStripe(order.product_id));
@@ -77,7 +77,7 @@ async function loadOrder() {
 
     cardEl.innerHTML = `
       <h2>Finalizar compra</h2>
-      <span class="demo-badge">🧪 Modo de demonstração — nenhum valor real será cobrado</span>
+      <span class="demo-badge">${icon('flask', 14)} Modo de demonstração — nenhum valor real será cobrado</span>
       ${summaryHtml(order)}
       <div class="demo-card-mock" style="margin-top:20px;">
         <div class="form-group">
@@ -91,7 +91,7 @@ async function loadOrder() {
       </div>
       <button class="btn btn-primary btn-block" id="pay-btn">Confirmar pagamento (simulado)</button>
       <div class="trust-strip">
-        <span class="trust-item"><span class="trust-icon">🔒</span> Em produção, isto é processado pela Stripe</span>
+        <span class="trust-item"><span class="trust-icon">${icon('lock', 16)}</span> Em produção, isto é processado pela Stripe</span>
       </div>
     `;
     document.getElementById('pay-btn').addEventListener('click', payWithSimulation);

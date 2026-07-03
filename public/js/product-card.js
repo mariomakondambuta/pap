@@ -1,11 +1,25 @@
 const FORMAT_LABELS = {
-  curso: '🎬 Curso',
-  ebook: '📕 E-book',
-  planilha: '📊 Planilha',
-  template: '📄 Template',
-  pack: '📦 Pack',
-  outro: '🗂️ Produto',
+  curso: 'Curso',
+  ebook: 'E-book',
+  planilha: 'Planilha',
+  template: 'Template',
+  pack: 'Pack',
+  outro: 'Produto',
 };
+
+const FORMAT_ICONS = {
+  curso: 'video',
+  ebook: 'book',
+  planilha: 'bar-chart',
+  template: 'file-text',
+  pack: 'package',
+  outro: 'grid',
+};
+
+function formatBadgeHtml(format) {
+  const label = FORMAT_LABELS[format] || format;
+  return `${icon(FORMAT_ICONS[format] || 'grid', 14)} ${label}`;
+}
 
 function formatPrice(cents, currency = 'EUR') {
   if (!cents) return 'Grátis';
@@ -13,7 +27,6 @@ function formatPrice(cents, currency = 'EUR') {
 }
 
 function productCardHtml(product) {
-  const formatLabel = FORMAT_LABELS[product.format] || product.format;
   const priceHtml = product.price_cents
     ? `<span class="price-tag price-tag-sm">${formatPrice(product.price_cents, product.currency)}</span>`
     : `<span class="price-tag price-tag-sm is-free">Grátis</span>`;
@@ -23,7 +36,7 @@ function productCardHtml(product) {
       <div class="course-card-thumb">${escapeHtml(product.title)}</div>
       <div class="course-card-body">
         <div class="flex-between">
-          <span class="format-badge">${formatLabel}</span>
+          <span class="format-badge">${formatBadgeHtml(product.format)}</span>
           ${priceHtml}
         </div>
         <h3 style="margin-bottom:4px;">${escapeHtml(product.title)}</h3>

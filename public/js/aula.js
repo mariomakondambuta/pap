@@ -59,7 +59,7 @@ async function loadLesson() {
     wasCompletedBefore = completed;
 
     contentEl.innerHTML = `
-      <a href="/curso.html?id=${lesson.product_id}" class="muted" style="font-size:0.9rem;">← ${escapeHtml(lesson.product_title)}</a>
+      <a href="/curso.html?id=${lesson.product_id}" class="muted" style="font-size:0.9rem; display:inline-flex; align-items:center; gap:4px;">${icon('chevron-left', 14)} ${escapeHtml(lesson.product_title)}</a>
       <div class="flex-between" style="margin-top:8px; margin-bottom:20px;">
         <h1 style="margin-bottom:0;">${escapeHtml(lesson.title)}</h1>
         <span class="badge badge-neutral">Aula ${position.index} de ${position.total}</span>
@@ -71,13 +71,13 @@ async function loadLesson() {
 
         <div class="flex-between" style="margin-top:32px; padding-top:24px; border-top:1px solid var(--color-border);">
           <div>
-            ${previousLesson ? `<a href="/aula.html?id=${previousLesson.id}" class="btn btn-outline">← Anterior</a>` : ''}
+            ${previousLesson ? `<a href="/aula.html?id=${previousLesson.id}" class="btn btn-outline">${icon('chevron-left', 16)} Anterior</a>` : ''}
           </div>
           <button class="btn ${completed ? 'btn-outline' : 'btn-primary'}" id="complete-btn" ${completed ? 'disabled' : ''}>
-            ${completed ? '✓ Aula concluída' : 'Marcar como concluída'}
+            ${completed ? `${icon('check', 16)} Aula concluída` : 'Marcar como concluída'}
           </button>
           <div>
-            ${nextLesson ? `<a href="/aula.html?id=${nextLesson.id}" class="btn btn-outline">Seguinte →</a>` : ''}
+            ${nextLesson ? `<a href="/aula.html?id=${nextLesson.id}" class="btn btn-outline">Seguinte ${icon('chevron-right', 16)}</a>` : ''}
           </div>
         </div>
       </div>
@@ -86,7 +86,7 @@ async function loadLesson() {
     const completeBtn = document.getElementById('complete-btn');
     if (completeBtn && !completed) completeBtn.addEventListener('click', completeLesson);
   } catch (err) {
-    contentEl.innerHTML = `<div class="empty-state"><div class="icon">😕</div>${escapeHtml(err.message)}</div>`;
+    contentEl.innerHTML = `<div class="empty-state"><div class="icon">${icon('alert-triangle', 32)}</div>${escapeHtml(err.message)}</div>`;
   }
 }
 

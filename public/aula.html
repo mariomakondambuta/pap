@@ -19,7 +19,7 @@
         <li><a href="/certificados.html">Certificados</a></li>
       </ul>
       <div class="flex gap-md" id="nav-actions"></div>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu">☰</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     </div>
   </nav>
 
@@ -31,7 +31,7 @@
 
   <div class="modal-overlay" id="cert-modal">
     <div class="modal text-center">
-      <div style="font-size:3rem;">🏆</div>
+      <div style="color:var(--color-accent);"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.5 13.5L7 22l5-3 5 3-1.5-8.5"/></svg></div>
       <h2>Parabéns, concluiu o curso!</h2>
       <p>O seu certificado já está disponível para download.</p>
       <div class="flex gap-md" style="justify-content:center;">
@@ -41,6 +41,7 @@
     </div>
   </div>
 
+  <script src="/js/icons.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/auth-guard.js"></script>
   <script src="/js/nav.js"></script>

@@ -3,7 +3,7 @@ const LEVEL_LABELS_FULL = {
   intermedio: 'Intermédio',
   avancado: 'Avançado',
 };
-const TYPE_ICON = { video: '🎥', pdf: '📄', file: '📎' };
+const TYPE_ICON = { video: 'video', pdf: 'file-text', file: 'paperclip' };
 const TYPE_LABEL = { video: 'Vídeo-aula', pdf: 'Documento PDF', file: 'Ficheiro para descarregar' };
 
 const params = new URLSearchParams(window.location.search);
@@ -15,17 +15,17 @@ if (!productId) {
 }
 
 function lessonItemHtml(lesson, hasAccess) {
-  const icon = lesson.completed ? '✓' : TYPE_ICON[lesson.type] || '📘';
+  const iconHtml = lesson.completed ? icon('check', 18) : icon(TYPE_ICON[lesson.type] || 'file-text', 18);
   const classes = ['lesson-item'];
   if (lesson.completed) classes.push('completed');
 
   const inner = `
-    <span class="lesson-icon">${icon}</span>
+    <span class="lesson-icon">${iconHtml}</span>
     <div style="flex:1;">
       <div style="font-weight:600;">${escapeHtml(lesson.title)}</div>
       <div class="muted" style="font-size:0.8rem;">${TYPE_LABEL[lesson.type] || lesson.type}${lesson.duration_minutes ? ` · ${lesson.duration_minutes} min` : ''}</div>
     </div>
-    <span>${hasAccess ? '›' : '🔒'}</span>
+    <span>${hasAccess ? icon('chevron-right', 16) : icon('lock', 16)}</span>
   `;
 
   if (hasAccess) {
@@ -99,7 +99,7 @@ async function loadProduct() {
           <div class="progress-bar-fill" style="width:${progress?.percent ?? 0}%;"></div>
         </div>
         ${progress?.percent === 100
-          ? `<a href="/certificados.html" class="btn btn-accent btn-block">🏆 Ver certificado</a>`
+          ? `<a href="/certificados.html" class="btn btn-accent btn-block">${icon('award', 18)} Ver certificado</a>`
           : `<span class="badge badge-success">Já tem acesso</span>`}
       `;
     } else if (product.is_free) {
@@ -110,8 +110,8 @@ async function loadProduct() {
 
     actionHtml += `
       <div class="trust-strip">
-        <span class="trust-item"><span class="trust-icon">🔒</span> Pagamento seguro</span>
-        <span class="trust-item"><span class="trust-icon">⚡</span> Acesso imediato</span>
+        <span class="trust-item"><span class="trust-icon">${icon('lock', 16)}</span> Pagamento seguro</span>
+        <span class="trust-item"><span class="trust-icon">${icon('zap', 16)}</span> Acesso imediato</span>
       </div>
     `;
 
@@ -119,7 +119,7 @@ async function loadProduct() {
       <div class="grid" style="grid-template-columns: 2fr 1fr; gap:40px; align-items:start;">
         <div>
           <div class="flex gap-sm" style="margin-bottom:12px;">
-            <span class="format-badge">${FORMAT_LABELS[product.format] || product.format}</span>
+            <span class="format-badge">${formatBadgeHtml(product.format)}</span>
             <span class="badge">${escapeHtml(product.category || 'Geral')}</span>
           </div>
           <h1>${escapeHtml(product.title)}</h1>
@@ -156,7 +156,7 @@ async function loadProduct() {
     const buyBtn = document.getElementById('buy-btn');
     if (buyBtn) buyBtn.addEventListener('click', buyNow);
   } catch (err) {
-    contentEl.innerHTML = `<div class="empty-state"><div class="icon">😕</div>${escapeHtml(err.message)}</div>`;
+    contentEl.innerHTML = `<div class="empty-state"><div class="icon">${icon('alert-triangle', 32)}</div>${escapeHtml(err.message)}</div>`;
   }
 }
 

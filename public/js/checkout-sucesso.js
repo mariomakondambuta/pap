@@ -18,7 +18,7 @@ async function pollOrder(attempt = 0) {
 
     if (order.status === 'paid') {
       cardEl.innerHTML = `
-        <div style="font-size:3rem;">🎉</div>
+        <div style="color:var(--color-success);">${icon('check-circle', 48)}</div>
         <h2>Pagamento confirmado!</h2>
         <p>Já tem acesso a <strong>${escapeHtml(order.product_title)}</strong>.</p>
         <div class="flex gap-md" style="justify-content:center;">
@@ -34,7 +34,7 @@ async function pollOrder(attempt = 0) {
       setTimeout(() => pollOrder(attempt + 1), 2000);
     } else {
       cardEl.innerHTML = `
-        <div style="font-size:2.5rem;">⏳</div>
+        <div style="color:var(--color-text-muted);">${icon('clock', 40)}</div>
         <h2>Ainda a processar</h2>
         <p>O seu pagamento está a ser confirmado. Pode acompanhar o estado no seu painel.</p>
         <a href="/painel.html" class="btn btn-primary">Ir para o meu painel</a>

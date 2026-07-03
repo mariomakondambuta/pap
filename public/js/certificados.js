@@ -10,7 +10,7 @@ function certificateCardHtml(cert) {
   });
   return `
     <div class="card">
-      <div style="font-size:2rem; margin-bottom:8px;">🏆</div>
+      <div style="color:var(--color-accent); margin-bottom:8px;">${icon('award', 32)}</div>
       <h3>${escapeHtml(cert.product_title)}</h3>
       <p style="font-size:0.85rem;">Emitido em ${issuedDate}</p>
       <p class="muted" style="font-size:0.8rem; margin-bottom:16px;">Código: ${cert.certificate_code}</p>
@@ -52,7 +52,7 @@ async function loadCertificates() {
     if (certificates.length === 0) {
       container.innerHTML = `
         <div class="empty-state" style="grid-column: 1 / -1;">
-          <div class="icon">🏆</div>
+          <div class="icon">${icon('award', 32)}</div>
           Ainda não concluiu nenhum produto.
           <div style="margin-top:16px;"><a href="/painel.html" class="btn btn-primary">Continuar a aprender</a></div>
         </div>`;
