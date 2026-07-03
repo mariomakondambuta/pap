@@ -26,11 +26,28 @@ function renderNavActions() {
   const painelLabel = user.role === 'admin' ? 'Painel Admin' : 'A minha conta';
 
   container.innerHTML = `
-    <a href="${painelLink}" class="btn btn-outline btn-sm">${painelLabel}</a>
-    <div class="avatar" title="${user.name}">${initials(user.name)}</div>
-    <button class="btn btn-ghost btn-sm" id="btn-logout">Sair</button>
+    <div class="account-menu">
+      <button class="avatar avatar-btn" id="account-menu-trigger" title="${user.name}">${initials(user.name)}</button>
+      <div class="account-menu-popover" id="account-menu-popover">
+        <div class="account-menu-header">
+          <div class="account-menu-name">${user.name}</div>
+          <div class="muted account-menu-email">${user.email}</div>
+        </div>
+        <a href="${painelLink}" class="account-menu-item">${icon('home', 16)} ${painelLabel}</a>
+        <button class="account-menu-item" id="btn-logout">${icon('logout', 16)} Sair</button>
+      </div>
+    </div>
   `;
 
+  const trigger = document.getElementById('account-menu-trigger');
+  const popover = document.getElementById('account-menu-popover');
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    popover.classList.toggle('show');
+  });
+  document.addEventListener('click', (e) => {
+    if (!trigger.contains(e.target) && !popover.contains(e.target)) popover.classList.remove('show');
+  });
   document.getElementById('btn-logout').addEventListener('click', () => Api.logout());
 }
 
