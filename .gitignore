@@ -1,5 +1,6 @@
 # Ignore temp folders
 node_modules/
+client/dist/
 
 # Ambiente
 .env
